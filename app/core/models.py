@@ -23,8 +23,8 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     """User model, used for authentication"""
-    email = models.EmailField(unique=True) # Required
-    name = models.CharField(max_length=255) # Required
+    email = models.EmailField(unique=True)  # Required
+    name = models.CharField(max_length=255)  # Required
     bio = models.CharField(max_length=360, null=True)
     profile_picture = models.ImageField(null=True)
 
