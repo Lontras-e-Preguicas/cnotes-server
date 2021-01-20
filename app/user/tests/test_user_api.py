@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 
 CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
+ME_URL = reverse('user:me')
 
 DEFAULT_PAYLOAD = {
             'email': 'ambrosia@rosie.tucker',
@@ -92,3 +93,44 @@ class PublicUserAPITests(TestCase):
         res = self.client.post(TOKEN_URL, {'email': payload['email']})
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_me_authentication_required(self):
+        """Test that user authentication is required for the me endpoint"""
+
+        res = self.client.get(ME_URL)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateUserAPITests(TestCase):
+    """Tests for the User API that requires authentication"""
+
+    def setUp(self):
+        self.user = create_user_util()
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_me_personal_data_retrieval(self):
+        """Test that me is returning only the relevant personal data"""
+        res = self.client.get(ME_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(res.data, {
+            'email': DEFAULT_PAYLOAD['email'],
+            'name': DEFAULT_PAYLOAD['name'],
+            'bio': DEFAULT_PAYLOAD['bio'],
+            'profile_picture': None
+        })
+
+    def test_me_personal_data_update(self):
+        """Test updating personal info"""
+        payload = {
+            'name': 'Rose Tucker: Ambrosia',
+            'password': 'rosie tucker '  # Password with trailing space
+        }
+
+        res = self.client.patch(ME_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.name, payload['name'])
+        self.assertTrue(self.user.check_password(payload['password']))
