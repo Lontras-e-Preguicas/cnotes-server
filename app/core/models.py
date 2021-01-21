@@ -7,11 +7,11 @@ class UserManager(BaseUserManager):
     def create_user(self, email: str, name: str, password: str, bio: str = None, **extra_fields):
         """Create an user from its fields"""
         if not email:
-            raise ValueError(_('Endereço de e-mail é obrigatório'))
+            raise ValueError(_('endereço de e-mail é obrigatório'))
         if not name:
-            raise ValueError(_('Nome é obrigatório'))
+            raise ValueError(_('nome é obrigatório'))
         if not password:
-            raise ValueError(_('Senha é obrigatória'))
+            raise ValueError(_('senha é obrigatória'))
 
         email = self.normalize_email(email)
         user = self.model(email=email, name=name, bio=bio, **extra_fields)
@@ -24,12 +24,16 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     """User model, used for authentication"""
     email = models.EmailField(unique=True)  # Required
-    name = models.CharField(max_length=255)  # Required
-    bio = models.CharField(max_length=360, null=True)
-    profile_picture = models.ImageField(null=True)
+    name = models.CharField(max_length=255, verbose_name=_("nome"))  # Required
+    bio = models.CharField(max_length=360, null=True, verbose_name=_("bio"))
+    profile_picture = models.ImageField(null=True, verbose_name=_("foto de perfil"))
 
     EMAIl_FIELD = 'email'
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'password']
 
     objects = UserManager()
+
+    class Meta:
+        verbose_name = _('usuário')
+        verbose_name_plural = _('usuários')

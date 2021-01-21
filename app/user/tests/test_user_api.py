@@ -96,7 +96,6 @@ class PublicUserAPITests(TestCase):
 
     def test_me_authentication_required(self):
         """Test that user authentication is required for the me endpoint"""
-
         res = self.client.get(ME_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
