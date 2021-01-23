@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, password_validation
 
 from django.utils.translation import gettext_lazy as _
 
@@ -13,6 +13,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'email', 'name', 'password', 'bio', 'profile_picture')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 8, 'trim_whitespace': False}}
+
+    def validate_password(self, password):
+        """Validate the password according to the password validators on settings"""
+        password_validation.validate_password(password)
+        return password
 
     def create(self, validated_data):
         """Creates new User with password"""

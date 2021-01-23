@@ -52,8 +52,8 @@ class PublicUserAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST, 'Check if error on creating existing user')
 
-    def test_password_validation(self):
-        """Test if the password is being properly validated"""
+    def test_password_validation_length(self):
+        """Test if the password length is being properly validated"""
         payload = {
             **DEFAULT_PAYLOAD,
             'password': 'passwd1',
@@ -62,6 +62,28 @@ class PublicUserAPITests(TestCase):
         res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST, 'Check if error on weak password')
+
+    def test_common_password_validation(self):
+        """Test if the password is in the common password database"""
+        payload = {
+            **DEFAULT_PAYLOAD,
+            'password': 'password1'
+        }
+
+        res = self.client.post(CREATE_USER_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST, 'Check if the password is common')
+
+    def test_numeric_password_validation(self):
+        """Test if the password contains letters"""
+        payload = {
+            **DEFAULT_PAYLOAD,
+            'password': '5346726482374'
+        }
+
+        res = self.client.post(CREATE_USER_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST, 'Check if the password is not entirely numeric')
 
     def test_token_creation_successful(self):
         """Test the successful creation of an authentication token"""
@@ -113,7 +135,10 @@ class PrivateUserAPITests(TestCase):
         res = self.client.get(ME_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
+        self.assertIn('id', res.data, 'ID retrieval')
+
         self.assertEqual(res.data, {
+            'id': res.data['id'],  # the id might be unpredictable
             'email': DEFAULT_PAYLOAD['email'],
             'name': DEFAULT_PAYLOAD['name'],
             'bio': DEFAULT_PAYLOAD['bio'],
