@@ -25,8 +25,8 @@ class User(AbstractBaseUser):
     """User model, used for authentication"""
     email = models.EmailField(unique=True)  # Required
     name = models.CharField(max_length=255, verbose_name=_("nome"))  # Required
-    bio = models.CharField(max_length=360, null=True, verbose_name=_("bio"))
-    profile_picture = models.ImageField(null=True, verbose_name=_("foto de perfil"))
+    bio = models.CharField(max_length=360, blank=True, null=True, verbose_name=_("bio"))
+    profile_picture = models.ImageField(blank=True, null=True, verbose_name=_("foto de perfil"))
 
     EMAIl_FIELD = 'email'
     USERNAME_FIELD = 'email'
