@@ -21,6 +21,8 @@ jobs:
         image: postgres:12
         env:
           POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: cnotes
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
