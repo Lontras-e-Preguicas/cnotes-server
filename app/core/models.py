@@ -34,6 +34,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     """User model, used for authentication"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)  # Required
     name = models.CharField(max_length=255, verbose_name=_("nome"))  # Required
     bio = models.CharField(max_length=360, blank=True, null=True, verbose_name=_("bio"))
