@@ -1,5 +1,6 @@
 from pathlib import Path
 from environ import Env
+from warnings import warn
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_cleanup',  # Unused files cleanup
     'core',
     'user',
 ]
@@ -77,6 +79,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'core.User'
+
+# i18n
+
 LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'UTC'
@@ -87,6 +93,14 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
+# Static and Media
 
-AUTH_USER_MODEL = 'core.User'
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = Path.joinpath(BASE_DIR, 'media')
+
+# Warning while not adding any storage service support
+if not DEBUG:
+    warn('Using file system media storage outside of DEBUG')
+

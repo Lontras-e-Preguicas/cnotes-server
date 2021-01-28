@@ -1,6 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from django.core.files.storage import DefaultStorage
+
+import uuid
+import os
+
+
+def profile_picture_path(instance, filename):
+    """Unique filename generation"""
+    ext = filename.split('.')[-1]
+    new_filename = f'{uuid.uuid4()}.{ext}'
+    return os.path.join('profile_pictures', new_filename)
 
 
 class UserManager(BaseUserManager):
@@ -26,7 +37,7 @@ class User(AbstractBaseUser):
     email = models.EmailField(unique=True)  # Required
     name = models.CharField(max_length=255, verbose_name=_("nome"))  # Required
     bio = models.CharField(max_length=360, blank=True, null=True, verbose_name=_("bio"))
-    profile_picture = models.ImageField(blank=True, null=True, verbose_name=_("foto de perfil"))
+    profile_picture = models.ImageField(upload_to=profile_picture_path, blank=True, null=True, verbose_name=_("foto de perfil"))
 
     EMAIl_FIELD = 'email'
     USERNAME_FIELD = 'email'

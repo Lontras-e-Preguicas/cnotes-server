@@ -9,6 +9,7 @@ djangorestframework = "*"
 pillow = "*"
 django-environ = "*"
 psycopg2-binary = "*"
+django-cleanup = "*"
 
 [dev-packages]
 autopep8 = "*"

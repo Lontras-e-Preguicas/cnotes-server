@@ -298,3 +298,10 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+################
+# APP Specific #
+################
+
+# Ignore local media files for testing
+/app/media
