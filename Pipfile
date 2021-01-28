@@ -12,6 +12,8 @@ psycopg2-binary = "*"
 django-cleanup = "*"
 django-resized = "*"
 django-extensions = "*"
+pyopenssl = "*"
+werkzeug = "*"
 
 [dev-packages]
 autopep8 = "*"
