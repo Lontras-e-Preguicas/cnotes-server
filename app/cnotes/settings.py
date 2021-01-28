@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = Env(
     DEBUG=(bool, False),
-    ALLOWED_HOSTS=(list, [])
+    ALLOWED_HOSTS=(list, []),
 )
 
 env.read_env(env_file=str(Path.joinpath(BASE_DIR.parent, '.env')))  # Loads .env file
@@ -104,3 +104,14 @@ MEDIA_ROOT = Path.joinpath(BASE_DIR, 'media')
 if not DEBUG:
     warn('Using file system media storage outside of DEBUG')
 
+# E-Mail settings
+
+EMAIL_SUBJECT_PREFIX = '[CNotes] '
+SERVER_EMAIL = env('SERVER_EMAIL', default='admin-noreply@localhost')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@localhost')
+EMAIL_SSL_KEYFILE = env('EMAIL_SSL_KEYFILE', default=None)
+EMAIL_SSL_CERTFILE = env('EMAIL_SSL_CERTFILE', default=None)
+
+# django-environ email_url, might override previous e-mail settings
+EMAIL_CONFIG = env.email_url('EMAIL_URL')
+vars().update(EMAIL_CONFIG)
