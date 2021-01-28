@@ -16,6 +16,7 @@ jobs:
     env:
       SECRET_KEY: 'er29n13y7^-or7%7k!5_!k&gf4v@9)kd$j&o_b2)2p=@c8^#87'
       DATABASE_URL: 'psql://postgres:postgres@127.0.0.1:5432/cnotes'
+      EMAIL_URL: 'memorymail:'
     services:
       postgres:
         image: postgres:12
