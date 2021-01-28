@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
-from django.core.files.storage import DefaultStorage
+from django_resized import ResizedImageField
 
 import uuid
 import os
@@ -37,7 +37,15 @@ class User(AbstractBaseUser):
     email = models.EmailField(unique=True)  # Required
     name = models.CharField(max_length=255, verbose_name=_("nome"))  # Required
     bio = models.CharField(max_length=360, blank=True, null=True, verbose_name=_("bio"))
-    profile_picture = models.ImageField(upload_to=profile_picture_path, blank=True, null=True, verbose_name=_("foto de perfil"))
+    profile_picture = ResizedImageField(
+        upload_to=profile_picture_path,
+        size=[512, 512],
+        quality=75,
+        crop=['middle', 'center'],
+        blank=True,
+        null=True,
+        verbose_name=_("foto de perfil")
+    )
 
     EMAIl_FIELD = 'email'
     USERNAME_FIELD = 'email'

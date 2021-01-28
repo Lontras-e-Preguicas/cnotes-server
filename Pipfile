@@ -10,6 +10,7 @@ pillow = "*"
 django-environ = "*"
 psycopg2-binary = "*"
 django-cleanup = "*"
+django-resized = "*"
 
 [dev-packages]
 autopep8 = "*"
