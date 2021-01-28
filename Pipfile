@@ -11,6 +11,7 @@ django-environ = "*"
 psycopg2-binary = "*"
 django-cleanup = "*"
 django-resized = "*"
+django-extensions = "*"
 
 [dev-packages]
 autopep8 = "*"
