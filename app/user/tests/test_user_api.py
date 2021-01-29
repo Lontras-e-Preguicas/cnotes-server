@@ -13,11 +13,11 @@ RESET_REQUEST_URL = reverse('user:password-reset-request')
 RESET_CONFIRM_URL = reverse('user:password-reset-confirm')
 
 DEFAULT_PAYLOAD = {
-            'email': 'ambrosia@rosie.tucker',
-            'name': 'Ambrosia - Rosie Tucker',
+    'email': 'ambrosia@rosie.tucker',
+    'name': 'Ambrosia - Rosie Tucker',
             'bio': 'Ambrosia\'s turning me honest',
             'password': '17PBeLUldWC941sX8Ffmkd',
-        }
+}
 
 
 def create_user_util(**fields):

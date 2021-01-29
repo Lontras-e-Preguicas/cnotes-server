@@ -1,13 +1,13 @@
 from django.utils.translation import gettext_lazy as _
-
 from rest_framework import authentication, permissions, viewsets
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
-from rest_framework.decorators import action
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.settings import api_settings
+from rest_framework.decorators import action
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 
-from user.serializers import UserSerializer, AuthTokenSerializer, CreatePasswordResetTokenSerializer, ConfirmPasswordResetTokenSerializer
+from user.serializers import UserSerializer, AuthTokenSerializer, CreatePasswordResetTokenSerializer, \
+    ConfirmPasswordResetTokenSerializer
 from user.signals import password_reset_request_signal
 
 
@@ -39,7 +39,7 @@ class PasswordResetViewset(viewsets.ViewSet):
         serializer = CreatePasswordResetTokenSerializer(data=request.data)
 
         if serializer.is_valid():
-            password_reset_request_signal.send( self.__class__, user=serializer.validated_data['user'])
+            password_reset_request_signal.send(self.__class__, user=serializer.validated_data['user'])
 
         return Response({'status': _('Solicitação de recuperação de senha enviada')})  # No data leakage
 
