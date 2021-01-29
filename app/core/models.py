@@ -70,3 +70,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _('usuário')
         verbose_name_plural = _('usuários')
+
+    def __str__(self):
+        return self.name
