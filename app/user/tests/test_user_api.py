@@ -1,19 +1,23 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, tokens
+from django.core import mail
+
 from rest_framework import status
 from rest_framework.test import APIClient
 
 CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
 ME_URL = reverse('user:me')
+RESET_REQUEST_URL = reverse('user:password-reset-request')
+RESET_CONFIRM_URL = reverse('user:password-reset-confirm')
 
 DEFAULT_PAYLOAD = {
-            'email': 'ambrosia@rosie.tucker',
-            'name': 'Ambrosia - Rosie Tucker',
+    'email': 'ambrosia@rosie.tucker',
+    'name': 'Ambrosia - Rosie Tucker',
             'bio': 'Ambrosia\'s turning me honest',
             'password': '17PBeLUldWC941sX8Ffmkd',
-        }
+}
 
 
 def create_user_util(**fields):
@@ -120,6 +124,60 @@ class PublicUserAPITests(TestCase):
         """Test that user authentication is required for the me endpoint"""
         res = self.client.get(ME_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_password_reset_request(self):
+        """Test the password reset token request"""
+        user = create_user_util()
+
+        request_payload = {
+            'email': user.email
+        }
+
+        # Non-existing account
+        res = self.client.post(RESET_REQUEST_URL, {'email': 'not@registered'})
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)  # Leak safe
+        self.assertEqual(len(mail.outbox), 0)
+
+        # Existing account
+        res = self.client.post(RESET_REQUEST_URL, request_payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox.pop()
+        self.assertIn(str(user.id), str(email.message()))  # Check if UID is on the message
+
+    def test_password_reset_confirm(self):
+        """Test the password reset token confirm"""
+        user = create_user_util()
+        user_2 = create_user_util(email='test@test.com')
+
+        token_generator = tokens.PasswordResetTokenGenerator()
+
+        request_payload_valid = {
+            'uid': str(user.id),
+            'token': token_generator.make_token(user),
+            'password': 'strong_password_122'
+        }
+
+        request_payload_invalid = {
+            **request_payload_valid,
+            'token': token_generator.make_token(user_2)
+        }
+
+        # Other user's token
+        res = self.client.post(RESET_CONFIRM_URL, request_payload_invalid)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Right token
+        res = self.client.post(RESET_CONFIRM_URL, request_payload_valid)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        user.refresh_from_db()
+        self.assertTrue(user.check_password(request_payload_valid['password']))
 
 
 class PrivateUserAPITests(TestCase):

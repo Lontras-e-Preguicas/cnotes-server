@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django_resized import ResizedImageField
 
@@ -31,8 +31,18 @@ class UserManager(BaseUserManager):
 
         return user
 
+    def create_superuser(self, email: str, name: str, password: str, **extra_fields):
+        """super user creation for django admin"""
+        return self.create_user(
+            email=email,
+            name=name,
+            password=password,
+            is_superuser=True,
+            is_staff=True,
+            **extra_fields)
 
-class User(AbstractBaseUser):
+
+class User(AbstractBaseUser, PermissionsMixin):
     """User model, used for authentication"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)  # Required
@@ -48,6 +58,9 @@ class User(AbstractBaseUser):
         verbose_name=_("foto de perfil")
     )
 
+    is_active = models.BooleanField(default=True, verbose_name=_("ativo"))
+    is_staff = models.BooleanField(default=False, verbose_name=_("staff"))
+
     EMAIl_FIELD = 'email'
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'password']
@@ -57,3 +70,6 @@ class User(AbstractBaseUser):
     class Meta:
         verbose_name = _('usuário')
         verbose_name_plural = _('usuários')
+
+    def __str__(self):
+        return self.name
