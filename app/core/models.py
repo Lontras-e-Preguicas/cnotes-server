@@ -44,10 +44,12 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     """User model, used for authentication"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
+                          help_text=_("ID único seguindo o padrão UUID4."))
     email = models.EmailField(unique=True)  # Required
     name = models.CharField(max_length=255, verbose_name=_("nome"))  # Required
-    bio = models.CharField(max_length=360, blank=True, null=True, verbose_name=_("bio"))
+    bio = models.CharField(max_length=360, blank=True, null=True, verbose_name=_("bio"),
+                           help_text=_("Pequena descrição pública do usuário."))
     profile_picture = ResizedImageField(
         upload_to=profile_picture_path,
         size=[512, 512],
@@ -55,11 +57,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         crop=['middle', 'center'],
         blank=True,
         null=True,
-        verbose_name=_("foto de perfil")
+        verbose_name=_("foto de perfil"),
+        help_text=_("Imagem de perfil do usuário.")
     )
 
-    is_active = models.BooleanField(default=True, verbose_name=_("ativo"))
-    is_staff = models.BooleanField(default=False, verbose_name=_("staff"))
+    is_active = models.BooleanField(default=True, verbose_name=_(
+        "ativo"), help_text=_("Indica se a conta do usuário está ativa."))
+    is_staff = models.BooleanField(default=False, verbose_name=_(
+        "staff"), help_text=_("Indica se o usuário é um administrador do sistema."))
 
     EMAIl_FIELD = 'email'
     USERNAME_FIELD = 'email'
