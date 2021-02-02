@@ -14,6 +14,7 @@ django-resized = "*"
 django-extensions = "*"
 pyopenssl = "*"
 werkzeug = "*"
+drf-yasg = "*"
 
 [dev-packages]
 autopep8 = "*"
