@@ -78,19 +78,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.name
-
-
-class Notebook(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
-                          help_text=_("ID único seguindo o padrão UUID4."))
-    title = models.CharField(max_length=255,
-                             verbose_name=_("título"),
-                             help_text=_("Título do caderno."))
-    creation_date = models.DateTimeField(auto_now_add=True, verbose_name=_("data de criação"),
-                                         help_text=_("Data de criação do caderno."))
-
-    owner = models.ForeignKey('User', on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = _('caderno')
-        verbose_name_plural = _('cadernos')

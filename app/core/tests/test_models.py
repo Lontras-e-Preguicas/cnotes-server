@@ -1,12 +1,24 @@
 from django.test import TestCase
-from django.core.exceptions import ValidationError
 from core.models import User, Notebook
 
 from datetime import datetime
 
 
-class UserModelTests(TestCase):
-    """Test the user model"""
+# Test utils
+def create_test_user() -> User:
+    """Create an user for testing"""
+    TEST_NAME = 'João Cleber'
+    TEST_MAIL = 'joao.cleber@celebridades.net'
+    TEST_PASSWORD = 'M0ld3d0r :3'
+    TEST_BIO = 'Apresentador João Cleber Fodão 😎'
+
+    return User.objects.create_user(name=TEST_NAME, email=TEST_MAIL, password=TEST_PASSWORD, bio=TEST_BIO)
+
+
+class ModelTests(TestCase):
+    """Test the models"""
+
+    # User tests
 
     def test_user_creation_successful(self):
         """Test the creation of a user"""
@@ -46,16 +58,19 @@ class UserModelTests(TestCase):
         with self.assertRaises(ValueError, msg="Creating an user with no password"):
             User.objects.create_user(email="cuca@beludo.net", name="Cuca Beludo", password=None)
 
-
-class ModelTests(TestCase):
-    """Test the other models"""
+    # Notebook Tests
 
     def test_notebook_creation(self):
         """Test the creation of an notebook"""
+        test_user = create_test_user()
+
         TEST_TITLE = 'Notebook 1'
 
-        notebook = Notebook.objects.create(title=TEST_TITLE)
+        notebook = Notebook.objects.create(title=TEST_TITLE, owner=test_user)
         self.assertEqual(notebook.creation_date.strftime("%D"), datetime.now().strftime("%D"))
 
         notebook_saved = Notebook.objects.get(id=notebook.id)
         self.assertEqual(notebook_saved.title, TEST_TITLE)
+        self.assertEqual(notebook_saved.owner_id, test_user.id)
+
+        self.assertEqual(str(notebook), TEST_TITLE)
