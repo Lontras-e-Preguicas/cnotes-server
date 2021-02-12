@@ -4,6 +4,8 @@ from django.utils.translation import gettext_lazy as _
 
 from core import models
 
+admin.site.register(models.Notebook)
+
 
 @admin.register(models.User)
 class UserAdmin(BaseUserAdmin):
@@ -30,3 +32,8 @@ class UserAdmin(BaseUserAdmin):
             )
         })
     )
+
+    add_fieldsets = ((None, {
+        'classes':  ('wide',),
+        'fields': ('name', 'email', 'password1', 'password2',)
+    }),)

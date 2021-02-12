@@ -3,7 +3,6 @@ import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.core import validators
 from django.utils.translation import gettext_lazy as _
 from django_resized import ResizedImageField
 
@@ -89,3 +88,9 @@ class Notebook(models.Model):
                              help_text=_("Título do caderno."))
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name=_("data de criação"),
                                          help_text=_("Data de criação do caderno."))
+
+    owner = models.ForeignKey('User', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = _('caderno')
+        verbose_name_plural = _('cadernos')
