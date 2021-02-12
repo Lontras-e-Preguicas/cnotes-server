@@ -2,11 +2,13 @@
 
 # CNotes - Server
 
-Neste repositório será gerenciado o desenvolvimento da API do sistema CNotes. Aqui serão armazenados o código, documentação e afins durante todo o desenvolvimento da aplicação.
+Neste repositório será gerenciado o desenvolvimento da API do sistema CNotes. Aqui serão armazenados o código, 
+documentação e afins durante todo o desenvolvimento da aplicação.
 
 ---
 
-Essa é uma aplicação desenvolvida por meio do [DJango](https://www.djangoproject.com). Sendo inicialmente gerada pelo `django-admin startproject`.
+Essa é uma aplicação desenvolvida por meio do [DJango](https://www.djangoproject.com). Sendo inicialmente gerada pelo 
+`django-admin startproject`.
 
 ## Build & Run
 
@@ -41,9 +43,13 @@ Essa é uma aplicação desenvolvida por meio do [DJango](https://www.djangoproj
     - `cd app` (se não estiver no diretório)
     - `python manage.py test`
 
+Quaisquer problemas, verificar o arquivo de [_troubleshoot_](docs/troubleshoot.md), se o problema não estiver documentado
+lá, entrar em contato com algume colaboradore do projeto (ou abrir uma issue). 
+
 ## Documentações
 
-O projeto deve ser documentado no diretório `docs` do repositório, em formato _Markdown_. Lá estarão documentações diversas, desde problemas frequentes até detalhamentos do funcionamento da aplicação e telas.
+O projeto deve ser documentado no diretório `docs` do repositório, em formato _Markdown_. Lá estarão documentações
+diversas, desde problemas frequentes até detalhamentos do funcionamento da aplicação e telas.
 
 Documentações dentro do código **não** devem ser substituídas por essas.
 
@@ -53,7 +59,8 @@ Para colaborar na aplicação será necessário seguir os seguintes requisitos:
 
 ### Git
 
-É necessário conhecimento básico sobre o funcionamento do Git e como utilizá-lo. Além disso, o uso de boas práticas de Git é necessário, dentre elas ressaltam-se:
+É necessário conhecimento básico sobre o funcionamento do Git e como utilizá-lo. Além disso, o uso de boas práticas de 
+Git é necessário, dentre elas ressaltam-se:
 
 1. Commits frequentes e sucintos
 2. Uso de branches para qualquer mudança na aplicação
@@ -61,17 +68,24 @@ Para colaborar na aplicação será necessário seguir os seguintes requisitos:
 
 ### Estilo de código
 
-O projeto usará como linter o `flake8` e o formatador `autopep8`, ambos já colocados como dependências do projeto. É **obrigatório** a execução do `flake8` antes de criar um PR, para evitar inconsistências de formatação.
+O projeto usará como linter o `flake8` e o formatador `autopep8`, ambos já colocados como dependências do projeto. É 
+**obrigatório** a execução do `flake8` antes de criar um PR, para evitar inconsistências de formatação. Em casos de não
+execução, quaisquer problemas de estilização serão reportados no ciclo de CI.
 
 ### Testes
 
 É necessário desenvolver testes para quaisquer novas funcionalidades adicionadas à aplicação.
 
-Além disso, recomenda-se fortemente a implementação do padrão de desenvolvimento [TDD (Test-driven Development)](https://pt.wikipedia.org/wiki/Test-driven_development). 
+Além disso, recomenda-se fortemente a implementação do padrão de desenvolvimento 
+[TDD (Test-driven Development)](https://pt.wikipedia.org/wiki/Test-driven_development). 
 
 ### Code review
 
-Todo código a ser adicionado na aplicação deve ser antes revisado por ume colega de equipe, a fim de evitar entrada de código defeituoso na aplicação, a colaboração de todos nesse processo de revisão é extremamente importante. Para realizar essa revisão é necessário que toda feature que venha a ser adiciona esteja em uma branch a parte (de preferência com um nome descritivo como: `feature/login`, `fix/validacaoEmail`), que então será mesclada à branch de desenvolvimento por meio de uma _Pull Request_, onde o código será validado e revisado antes de ser enviado.
+Todo código a ser adicionado na aplicação deve ser antes revisado por ume colega de equipe, na finalidade de evitar 
+entrada de código defeituoso na aplicação, a colaboração de todos nesse processo de revisão é extremamente importante. 
+Para realizar essa revisão é necessário que toda feature que venha a ser adiciona esteja em uma branch a parte (de 
+preferência com um nome descritivo como: `feature/login`, `fix/validacaoEmail`), que então será mesclada à branch de 
+desenvolvimento através de uma _Pull Request_, onde o código será validado e revisado antes de ser enviado.
 
 [Guia: Code-review](https://lontras-e-preguicas.github.io/guides/code-review/)
 
@@ -82,8 +96,9 @@ sujeitos a execução automática de testes para assegurar a qualidade e funcion
 
 ### Estrutura do projeto
 
-O projeto segue a estrutura padrão do DJango com algumas pequenas alterações, dentre elas:
+O projeto segue a estrutura padrão do DJango com algumas pequenas observações, dentre elas:
 
-- Os testes ficam em pacotes a parte, ao invés de um único arquivo `tests.py`
+- Os testes ficam em pacotes a parte (`{app}/tests/`), ao invés de um único arquivo `tests.py`
 - Os modelos são concentrados no app `core`
-- O mantimento ou não do Admin do DJango ainda está em debate
+  - Importante: ao adicionar um novo modelo em `core/models/`, importá-lo em `core/models/__init__.py`
+- Adicionar novos modelos no _admin_ por meio do `core/admin.py`
