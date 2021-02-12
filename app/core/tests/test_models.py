@@ -1,5 +1,8 @@
 from django.test import TestCase
-from core.models import User
+from django.core.exceptions import ValidationError
+from core.models import User, Notebook
+
+from datetime import datetime
 
 
 class UserModelTests(TestCase):
@@ -42,3 +45,17 @@ class UserModelTests(TestCase):
 
         with self.assertRaises(ValueError, msg="Creating an user with no password"):
             User.objects.create_user(email="cuca@beludo.net", name="Cuca Beludo", password=None)
+
+
+class ModelTests(TestCase):
+    """Test the other models"""
+
+    def test_notebook_creation(self):
+        """Test the creation of an notebook"""
+        TEST_TITLE = 'Notebook 1'
+
+        notebook = Notebook.objects.create(title=TEST_TITLE)
+        self.assertEqual(notebook.creation_date.strftime("%D"), datetime.now().strftime("%D"))
+
+        notebook_saved = Notebook.objects.get(id=notebook.id)
+        self.assertEqual(notebook_saved.title, TEST_TITLE)
