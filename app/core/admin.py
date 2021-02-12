@@ -30,3 +30,18 @@ class UserAdmin(BaseUserAdmin):
             )
         })
     )
+
+    add_fieldsets = ((None, {
+        'classes': ('wide',),
+        'fields': ('name', 'email', 'password1', 'password2',)
+    }),)
+
+
+@admin.register(models.Notebook)
+class NotebookAdmin(admin.ModelAdmin):
+    readonly_fields = ('id', 'creation_date')
+    list_display = ('title', 'owner')
+
+    fieldsets = ((None, {
+        'fields': ('id', 'title', 'owner', 'creation_date')
+    }),)

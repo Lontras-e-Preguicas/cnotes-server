@@ -1,10 +1,10 @@
-from django.db import models
+import os
+import uuid
+
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_resized import ResizedImageField
-
-import uuid
-import os
 
 
 def profile_picture_path(instance, filename):
