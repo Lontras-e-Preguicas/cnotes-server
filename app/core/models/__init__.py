@@ -2,3 +2,4 @@
 # flake8: noqa
 from .user import User
 from .notebook import Notebook
+from .folder import Folder

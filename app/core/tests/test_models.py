@@ -1,5 +1,5 @@
 from django.test import TestCase
-from core.models import User, Notebook
+from core.models import User, Notebook, Folder
 
 from datetime import datetime
 
@@ -61,7 +61,7 @@ class ModelTests(TestCase):
     # Notebook Tests
 
     def test_notebook_creation(self):
-        """Test the creation of an notebook"""
+        """Test the creation of a notebook"""
         test_user = create_test_user()
 
         TEST_TITLE = 'Notebook 1'
@@ -74,3 +74,21 @@ class ModelTests(TestCase):
         self.assertEqual(notebook_saved.owner_id, test_user.id)
 
         self.assertEqual(str(notebook), TEST_TITLE)
+
+    def test_folder_creation(self):
+        """Test the creation of a Folder"""
+        test_user = create_test_user()
+
+        notebook = Notebook.objects.create(title='notebook', owner=test_user)
+
+        root_folder_title = 'Anxiety'
+        sub_folder_title = 'Peace'
+
+        root_folder = Folder.objects.create(title=root_folder_title, notebook=notebook, parent_folder=None)
+        self.assertEqual(root_folder.parent_folder, None)
+        self.assertEqual(root_folder.notebook_id, notebook.id)
+        self.assertEqual(root_folder.title, root_folder_title)
+
+        sub_folder = Folder.objects.create(title=sub_folder_title, notebook=notebook, parent_folder=root_folder)
+        self.assertEqual(sub_folder.parent_folder_id, root_folder.id)
+        self.assertEqual(sub_folder.notebook_id, sub_folder.parent_folder.notebook_id)
