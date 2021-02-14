@@ -11,11 +11,16 @@ class Folder(models.Model):
                              verbose_name=_("título"),
                              help_text=_("Título da pasta."))
     notebook = models.ForeignKey('Notebook', on_delete=models.CASCADE, verbose_name=_('caderno'),
-                                 help_text=_('Caderno onde a pasta se localiza.'))
+                                 help_text=_('Caderno onde a pasta se localiza.'),
+                                 related_name='folders',
+                                 related_query_name='folder'
+                                 )
 
     parent_folder = models.ForeignKey('Folder', null=True, blank=True, on_delete=models.CASCADE,
                                       verbose_name=_('pasta pai'),
-                                      help_text=_('Pasta em que esta pasta se localiza, em caso de nulo, pasta raiz.'))
+                                      help_text=_('Pasta em que esta pasta se localiza, em caso de nulo, pasta raiz.'),
+                                      related_name='sub_folders',
+                                      related_query_name='sub_folder')
 
     class Meta:
         verbose_name = _('pasta')

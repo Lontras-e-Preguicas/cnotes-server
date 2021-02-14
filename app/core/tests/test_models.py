@@ -15,6 +15,11 @@ def create_test_user() -> User:
     return User.objects.create_user(name=TEST_NAME, email=TEST_MAIL, password=TEST_PASSWORD, bio=TEST_BIO)
 
 
+def create_test_notebook(user: User) -> Notebook:
+    """Create a notebook for testing"""
+    return Notebook.objects.create(title="Test Notebook", owner=user)
+
+
 class ModelTests(TestCase):
     """Test the models"""
 
@@ -79,16 +84,20 @@ class ModelTests(TestCase):
         """Test the creation of a Folder"""
         test_user = create_test_user()
 
-        notebook = Notebook.objects.create(title='notebook', owner=test_user)
+        test_notebook = create_test_notebook(test_user)
 
         root_folder_title = 'Anxiety'
         sub_folder_title = 'Peace'
 
-        root_folder = Folder.objects.create(title=root_folder_title, notebook=notebook, parent_folder=None)
+        root_folder = Folder.objects.create(title=root_folder_title, notebook=test_notebook, parent_folder=None)
         self.assertEqual(root_folder.parent_folder, None)
-        self.assertEqual(root_folder.notebook_id, notebook.id)
+        self.assertEqual(root_folder.notebook_id, test_notebook.id)
         self.assertEqual(root_folder.title, root_folder_title)
 
-        sub_folder = Folder.objects.create(title=sub_folder_title, notebook=notebook, parent_folder=root_folder)
+        sub_folder = Folder.objects.create(title=sub_folder_title, notebook=test_notebook, parent_folder=root_folder)
         self.assertEqual(sub_folder.parent_folder_id, root_folder.id)
         self.assertEqual(sub_folder.notebook_id, sub_folder.parent_folder.notebook_id)
+
+        root_folder.refresh_from_db()
+        sub_folders = root_folder.sub_folders.all()
+        self.assertIn(sub_folder, sub_folders)
