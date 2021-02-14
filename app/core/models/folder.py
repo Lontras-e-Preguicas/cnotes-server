@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 
@@ -25,6 +26,8 @@ class Folder(models.Model):
     class Meta:
         verbose_name = _('pasta')
         verbose_name_plural = _('pastas')
+        constraints = [models.UniqueConstraint(fields=['notebook'], condition=Q(parent_folder=None),
+                                               name='unique_parent_folder')]
 
     def __str__(self):
         return self.title
