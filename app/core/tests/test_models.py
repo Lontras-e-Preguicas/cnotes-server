@@ -1,5 +1,5 @@
 from django.test import TestCase
-from core.models import User, Notebook, Folder, NoteGroup
+from core.models import User, Notebook, Folder, NoteGroup, Member
 
 from datetime import datetime
 
@@ -23,6 +23,11 @@ def create_test_notebook(user: User) -> Notebook:
 def create_test_folder(notebook: Notebook, parent_folder: Folder = None) -> Folder:
     """Create a folder for testing"""
     return Folder.objects.create(title='Test Folder', notebook=notebook, parent_folder=parent_folder)
+
+
+def create_test_member(user: User, notebook: Notebook) -> Member:
+    """Create a member for testing"""
+    return Member.objects.create(user=user, notebook=notebook)
 
 
 class ModelTests(TestCase):
@@ -121,3 +126,15 @@ class ModelTests(TestCase):
 
         folders_groups = test_folder.note_groups.all()
         self.assertIn(note_group, folders_groups)
+
+    # Member Tests
+
+    def teste_member_creation(self):
+        """Test the creation of a member"""
+        test_user = create_test_user()
+        test_notebook = create_test_notebook(test_user)
+
+        member = Member.objects.create(user=test_user, notebook=test_notebook)
+        self.assertEqual(member.user, test_user)
+        self.assertEqual(member.notebook, test_notebook)
+        self.assertEqual(member.member_since.strftime("%D"), datetime.now().strftime("%D"))
