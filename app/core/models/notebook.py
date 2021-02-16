@@ -14,7 +14,10 @@ class Notebook(models.Model):
                                          help_text=_("Data de criação do caderno."))
 
     owner = models.ForeignKey('User', on_delete=models.CASCADE, verbose_name=_('dono'),  # pain
-                              help_text=_('Atual dono do caderno.'))
+                              help_text=_('Atual dono do caderno.'),
+                              related_name='notebooks',
+                              related_query_name='notebook'
+                              )
 
     class Meta:
         verbose_name = _('caderno')

@@ -45,3 +45,7 @@ class NotebookAdmin(admin.ModelAdmin):
     fieldsets = ((None, {
         'fields': ('id', 'title', 'owner', 'creation_date')
     }),)
+
+
+admin.site.register(models.Folder)
+admin.site.register(models.NoteGroup)
