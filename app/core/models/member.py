@@ -45,4 +45,4 @@ class Member(models.Model):
         verbose_name_plural = _('membros')
 
     def __str__(self):
-        return self.title
+        return f'{self.notebook}: {self.user}'

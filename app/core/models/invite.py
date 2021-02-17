@@ -31,4 +31,4 @@ class Invite(models.Model):
         verbose_name_plural = _('convites')
 
     def __str__(self):
-        return self.title
+        return f'{self._meta.verbose_name} {self.sender} => {self.receiver}'
