@@ -50,3 +50,4 @@ class NotebookAdmin(admin.ModelAdmin):
 admin.site.register(models.Folder)
 admin.site.register(models.NoteGroup)
 admin.site.register(models.Member)
+admin.site.register(models.Invite)

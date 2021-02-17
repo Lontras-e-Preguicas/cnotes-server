@@ -1,18 +1,19 @@
 from django.test import TestCase
-from core.models import User, Notebook, Folder, NoteGroup, Member
+from core.models import User, Notebook, Folder, NoteGroup, Member, Invite
 
 from datetime import datetime
 
 
 # Test utils
-def create_test_user() -> User:
+def create_test_user(
+    name='João Cleber',
+    mail='joao.cleber@celebridades.net',
+    password='M0ld3d0r :3',
+    bio='Apresentador João Cleber Fodão 😎'
+) -> User:
     """Create an user for testing"""
-    test_name = 'João Cleber'
-    test_mail = 'joao.cleber@celebridades.net'
-    test_password = 'M0ld3d0r :3'
-    test_bio = 'Apresentador João Cleber Fodão 😎'
 
-    return User.objects.create_user(name=test_name, email=test_mail, password=test_password, bio=test_bio)
+    return User.objects.create_user(name=name, email=mail, password=password, bio=bio)
 
 
 def create_test_notebook(user: User) -> Notebook:
@@ -28,6 +29,11 @@ def create_test_folder(notebook: Notebook, parent_folder: Folder = None) -> Fold
 def create_test_member(user: User, notebook: Notebook) -> Member:
     """Create a member for testing"""
     return Member.objects.create(user=user, notebook=notebook)
+
+
+def create_test_invite(member: Member, user: User) -> Invite:
+    """Create an invite for testing"""
+    return Invite.objects.create(member=member, user=user)
 
 
 class ModelTests(TestCase):
@@ -132,9 +138,27 @@ class ModelTests(TestCase):
     def teste_member_creation(self):
         """Test the creation of a member"""
         test_user = create_test_user()
-        test_notebook = create_test_notebook(test_user)
+        test_owner = create_test_user(name='Ednaldo Pereira', mail='ednaldo@gmail.com', password='abuble', bio='brabo')
+        test_notebook = create_test_notebook(test_owner)
 
         member = Member.objects.create(user=test_user, notebook=test_notebook)
         self.assertEqual(member.user, test_user)
         self.assertEqual(member.notebook, test_notebook)
         self.assertEqual(member.member_since.strftime("%D"), datetime.now().strftime("%D"))
+
+    # Invite Test
+
+    def test_invite_creation(self):
+        """Test the creation of an invite"""
+        # Criação do dono do caderno e do caderno para criar um membro
+        test_owner = create_test_user(name='Ednaldo', mail='ed@gmail.com', password='abuble', bio='gente boa')
+        test_notebook = create_test_notebook(test_owner)
+        # Criação do membro que irá enviar o convite
+        test_member = create_test_member(test_owner, test_notebook)
+        # Criação do usuário que irá receber o convite
+        test_user = create_test_user()
+
+        invite = Invite.objects.create(sender=test_member, receiver=test_user)
+        self.assertEqual(invite.sender, test_member)
+        self.assertEqual(invite.receiver, test_user)
+        self.assertEqual(invite.invite_date.strftime("%D"), datetime.now().strftime("%D"))
