@@ -1,5 +1,5 @@
 from django.test import TestCase
-from core.models import User, Notebook, Folder, NoteGroup, Member, Invite
+from core.models import User, Notebook, Folder, NoteGroup, Member, Invite, Activity
 
 from datetime import datetime
 
@@ -34,6 +34,11 @@ def create_test_member(user: User, notebook: Notebook) -> Member:
 def create_test_invite(member: Member, user: User) -> Invite:
     """Create an invite for testing"""
     return Invite.objects.create(member=member, user=user)
+
+
+def create_test_activity(user: User, title: str, description: str) -> Activity:
+    """Create an activity for testing"""
+    return Activity.objects.create(user=user, title=title, description=description)
 
 
 class ModelTests(TestCase):
@@ -162,3 +167,16 @@ class ModelTests(TestCase):
         self.assertEqual(invite.sender, test_member)
         self.assertEqual(invite.receiver, test_user)
         self.assertEqual(invite.invite_date.strftime("%D"), datetime.now().strftime("%D"))
+
+    # Activity Test
+
+    def test_activity_creation(self):
+        """Test the creation of an activity"""
+        test_user = create_test_user()
+        test_title = 'Atividade Teste'
+        test_description = 'Essa atividade foi criada para fins de teste'
+
+        activity = Activity.objects.create(user=test_user, title=test_title, description=test_description)
+        self.assertEqual(activity.user, test_user)
+        self.assertEqual(activity.description, test_description)
+        self.assertEqual(activity.title, test_title)
