@@ -13,7 +13,7 @@ class Invite(models.Model):
                           help_text=_("ID único seguindo o padrão UUID4.")
                           )
     sender = models.ForeignKey('Member', on_delete=models.CASCADE, verbose_name=_('remetente'),
-                               help_text=_('Usuário remetende do convite'),
+                               help_text=_('Usuário remetente do convite'),
                                related_name='invites_sent',
                                related_query_name='invite_sent'
                                )
