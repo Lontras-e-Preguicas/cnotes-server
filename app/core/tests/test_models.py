@@ -1,5 +1,5 @@
 from django.test import TestCase
-from core.models import User, Notebook, Folder, NoteGroup, Member, Invite, Activity
+from core.models import User, Notebook, Folder, NoteGroup, Member, Invite, Activity, Note
 
 from datetime import datetime
 
@@ -39,6 +39,15 @@ def create_test_invite(member: Member, user: User) -> Invite:
 def create_test_activity(user: User, title: str, description: str) -> Activity:
     """Create an activity for testing"""
     return Activity.objects.create(user=user, title=title, description=description)
+
+
+def create_test_note_group(parent_folder: Folder, title: str = 'Test NoteGroup') -> NoteGroup:
+    return NoteGroup.objects.create(title=title, parent_folder=parent_folder)
+
+
+def create_test_note(author: Member, note_group: NoteGroup, title: str = "Test Note") -> Note:
+    """Create a note for testing"""
+    return Note.objects.create(author=author, note_group=note_group, title=title)
 
 
 class ModelTests(TestCase):
@@ -180,3 +189,24 @@ class ModelTests(TestCase):
         self.assertEqual(activity.user, test_user)
         self.assertEqual(activity.description, test_description)
         self.assertEqual(activity.title, test_title)
+
+    # Note Test
+
+    def test_note_creation(self):
+        """Test the creation of a note"""
+        test_user = create_test_user()
+        test_notebook = create_test_notebook(test_user)
+        test_member = create_test_member(test_user, test_notebook)
+        test_folder = create_test_folder(test_notebook)
+        test_note_group = create_test_note_group(test_folder)
+
+        test_title = "Some Note"
+
+        test_note = Note.objects.create(author=test_member, note_group=test_note_group, title=test_title)
+        self.assertEqual(test_note.author, test_member)
+        self.assertEqual(test_note.creation_date.strftime("%D"), datetime.now().strftime("%D"))
+        self.assertEqual(test_note.title, test_title)
+        self.assertEqual(test_note.content, "")
+
+        self.assertIn(test_note, test_note_group.notes.all())
+        self.assertIn(test_note, test_member.notes.all())

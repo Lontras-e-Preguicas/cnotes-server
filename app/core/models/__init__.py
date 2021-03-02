@@ -7,3 +7,4 @@ from .note_group import NoteGroup
 from .member import Member
 from .invite import Invite
 from .activity import Activity
+from .note import Note
