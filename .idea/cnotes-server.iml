@@ -6,7 +6,7 @@
         <option name="rootFolder" value="$MODULE_DIR$/app" />
         <option name="settingsModule" value="cnotes/settings.py" />
         <option name="manageScript" value="manage.py" />
-        <option name="environment" value="&lt;map&gt;&#10;  &lt;entry&gt;&#10;    &lt;string&gt;SECRET_KEY&lt;/string&gt;&#10;    &lt;string&gt;KFGHDAKG80U3H993485Y95HJI&lt;/string&gt;&#10;  &lt;/entry&gt;&#10;  &lt;entry&gt;&#10;    &lt;string&gt;EMAIL_URL&lt;/string&gt;&#10;    &lt;string&gt;consolemail:&lt;/string&gt;&#10;  &lt;/entry&gt;&#10;  &lt;entry&gt;&#10;    &lt;string&gt;DATABASE_URL&lt;/string&gt;&#10;    &lt;string&gt;psql://postgres:root@127.0.0.1:5433/cnotes&lt;/string&gt;&#10;  &lt;/entry&gt;&#10;  &lt;entry&gt;&#10;    &lt;string&gt;DEBUG&lt;/string&gt;&#10;    &lt;string&gt;1&lt;/string&gt;&#10;  &lt;/entry&gt;&#10;  &lt;entry&gt;&#10;    &lt;string&gt;ALLOWED_HOSTS&lt;/string&gt;&#10;    &lt;string&gt;*&lt;/string&gt;&#10;  &lt;/entry&gt;&#10;&lt;/map&gt;" />
+        <option name="environment" value="&lt;map/&gt;" />
         <option name="doNotUseTestRunner" value="false" />
         <option name="trackFilePattern" value="" />
       </configuration>
