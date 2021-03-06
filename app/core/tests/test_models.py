@@ -211,7 +211,7 @@ class ModelTests(TestCase):
 
         self.assertIn(test_note, test_note_group.notes.all())
         self.assertIn(test_note, test_member.notes.all())
-        # add str test
+        self.assertIsNotNone(str(test_note))
 
     def test_rating_creation(self):
         """Test the creation of a rating"""
@@ -224,9 +224,11 @@ class ModelTests(TestCase):
 
         test_rating = Rating.objects.create(note=test_note, rating=8, rater=test_member)
 
+        self.assertIsNotNone(str(test_rating))
         self.assertIn(test_rating, test_note.ratings.all())
         self.assertEqual(test_rating.rating, 8)
         self.assertIn(test_rating, test_member.rates.all())
+        self.assertEqual(test_rating.rated_date.strftime("%D"), datetime.now().strftime("%D"))
 
         with self.assertRaises(IntegrityError):
             Rating.objects.create(note=test_note, rating=8, rater=test_member)
