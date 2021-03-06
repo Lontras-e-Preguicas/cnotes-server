@@ -9,12 +9,13 @@ class Rating(models.Model):
                           help_text=_("ID único seguindo o padrão UUID4."))
 
     note = models.ForeignKey('Note', on_delete=models.CASCADE, verbose_name=_('anotação'),
-                             help_text=_('anotação avaliada'),
+                             help_text=_('Anotação avaliada.'),
                              related_name='ratings', related_query_name='rating',
                              editable=False
                              )
 
-    rating = models.IntegerField(verbose_name=_('avaliação'), help_text=_('valor da avaliação dada'), )
+    rating = models.IntegerField(verbose_name=_('avaliação'),
+                                 help_text=_('Valor da avaliação dada.'), )  # Adicionar validators
 
     rater = models.ForeignKey('Member', on_delete=models.CASCADE, verbose_name=_('avaliador'),
                               help_text=_('Autor da avaliação.'),

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from core.models import User, Notebook, Folder, NoteGroup, Member, Invite, Activity, Note, Rating
+from core.models import User, Notebook, Folder, NoteGroup, Member, Invite, Activity, Note, Rating, Comment
 from django.db.utils import IntegrityError
 
 from datetime import datetime
@@ -232,3 +232,20 @@ class ModelTests(TestCase):
 
         with self.assertRaises(IntegrityError):
             Rating.objects.create(note=test_note, rating=8, rater=test_member)
+
+    def test_comment_creation(self):
+        """Test comment creation"""
+        test_user = create_test_user()
+        test_notebook = create_test_notebook(test_user)
+        test_member = create_test_member(test_user, test_notebook)
+        test_folder = create_test_folder(test_notebook)
+        test_note_group = create_test_note_group(test_folder)
+        test_note = create_test_note(test_member, test_note_group)
+
+        test_comment = Comment.objects.create(note=test_note, commenter=test_member, message="Test comment")
+
+        self.assertIsNotNone(str(test_comment))
+        self.assertIn(test_comment, test_note.comments.all())
+        self.assertIn(test_comment, test_member.comments.all())
+        self.assertFalse(test_comment.solved)
+        self.assertEqual(test_comment.creation_date.strftime("%D"), datetime.now().strftime("%D"))
