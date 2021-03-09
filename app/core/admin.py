@@ -47,8 +47,28 @@ class NotebookAdmin(admin.ModelAdmin):
     }),)
 
 
+@admin.register(models.NoteGroup)
+class NoteGroupAdmin(admin.ModelAdmin):
+    readonly_fields = ('id',)
+    list_display = ('title', 'parent_folder')
+
+    fieldsets = ((None, {
+        'fields': ('id', 'title', 'parent_folder')
+    }),)
+
+
+@admin.register(models.Note)
+class NoteAdmin(admin.ModelAdmin):
+    readonly_fields = ('id', 'creation_date')
+    list_display = ('title', 'author', 'note_group')
+
+    fieldsets = ((None, {
+        'fields': ('id', 'creation_date', 'author', 'note_group', 'title', 'content')
+    }),)
+
+
 admin.site.register(models.Folder)
-admin.site.register(models.NoteGroup)
 admin.site.register(models.Member)
 admin.site.register(models.Invite)
 admin.site.register(models.Activity)
+admin.site.register(models.Comment)

@@ -30,4 +30,7 @@ class Folder(models.Model):
                                                name='unique_parent_folder')]
 
     def __str__(self):
-        return self.title
+        if self.parent_folder:
+            return f'{self.parent_folder}/{self.title}'
+
+        return f'{self.notebook}/{self.title}'
