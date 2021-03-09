@@ -264,4 +264,4 @@ class ModelTests(TestCase):
 
         self.assertEqual(membership.role, Member.Roles.ADMIN)  # Assert right role assignment
 
-        root_folder = Folder.objects.get(notebook=test_notebook, parent_folder=None)  # If not found, raises exception
+        Folder.objects.get(notebook=test_notebook, parent_folder=None)  # If root folder not found, raises exception
