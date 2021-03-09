@@ -3,6 +3,17 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from .folder import Folder
+from .member import Member
+
+
+class NotebookManager(models.Manager):
+    def create_notebook(self, owner=None, **kwargs):
+        notebook = self.create(owner=owner, **kwargs)
+        Member.objects.create(user=owner, notebook=notebook, role=Member.Roles.ADMIN)  # Create owner as member
+        Folder.objects.create(notebook=notebook, parent_folder=None, title='root')  # Create root folder
+        return notebook
+
 
 class Notebook(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
@@ -18,6 +29,8 @@ class Notebook(models.Model):
                               related_name='notebooks',
                               related_query_name='notebook'
                               )
+
+    objects = NotebookManager()
 
     class Meta:
         verbose_name = _('caderno')

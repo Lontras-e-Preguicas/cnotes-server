@@ -43,6 +43,7 @@ class Member(models.Model):
     class Meta:
         verbose_name = _('membro')
         verbose_name_plural = _('membros')
+        unique_together = ('user', 'notebook')
 
     def __str__(self):
         return f'{self.notebook}: {self.user}'

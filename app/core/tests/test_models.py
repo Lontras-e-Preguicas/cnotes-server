@@ -249,3 +249,19 @@ class ModelTests(TestCase):
         self.assertIn(test_comment, test_member.comments.all())
         self.assertFalse(test_comment.solved)
         self.assertEqual(test_comment.creation_date.strftime("%D"), datetime.now().strftime("%D"))
+
+    def test_notebook_create_notebook(self):
+        """Test the custom create_notebook method"""
+        test_user = create_test_user()
+
+        test_notebook: Notebook = Notebook.objects.create_notebook(title="Test title", owner=test_user)
+
+        self.assertIsNotNone(test_notebook.id)
+
+        Notebook.objects.get(id=test_notebook.id)  # If not found, raises exception
+
+        membership = Member.objects.get(notebook=test_notebook, user=test_user)  # If not found, raises exception
+
+        self.assertEqual(membership.role, Member.Roles.ADMIN)  # Assert right role assignment
+
+        Folder.objects.get(notebook=test_notebook, parent_folder=None)  # If root folder not found, raises exception
