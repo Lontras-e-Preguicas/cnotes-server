@@ -1,35 +1,88 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Avg
 
-from core.models import Member, NoteGroup, Note
+from core.models import Member, NoteGroup, Note, Notebook
 
 
-# Change to default serializer?
+class SerializerRelatedField(serializers.PrimaryKeyRelatedField):
+    """
+    Field to represent a related field (FK) through a serializer on read
+    ref: https://stackoverflow.com/a/52246232
+    """
+
+    def __init__(self, **kwargs):
+        self.serializer = kwargs.pop('serializer', None)
+        if self.serializer is not None and not issubclass(self.serializer, serializers.Serializer):
+            raise TypeError('"serializer" is not a valid serializer class')
+        super().__init__(**kwargs)
+
+    def use_pk_only_optimization(self):
+        return False if self.serializer else True
+
+    def to_representation(self, value):
+        if self.serializer:
+            return self.serializer(value, context=self.context).data
+        return super().to_representation(value)
+
+
+class NoteAuthorSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='user.name')
+    profile_picture = serializers.CharField(source='user.profile_picture')
+
+    class Meta:
+        model = Member
+        fields = ('id', 'name', 'profile_picture')
+        read_only_fields = fields
+
 
 class NoteSerializer(serializers.ModelSerializer):
     """Serializes Note model"""
+    rating = serializers.SerializerMethodField()
+    author = SerializerRelatedField(queryset=Member.objects.all(), serializer=NoteAuthorSerializer)
+
+    def get_rating(self, obj: Note):
+        computed_rating = obj.ratings.aggregate(Avg('rating'))['rating__avg']
+        return computed_rating
 
     class Meta:
         model = Note
-        fields = ('id', 'author', 'note_group', 'title', 'creation_date', 'content')
-        extra_kwargs = {
-            'id': {
-                'read_only': True
-            },
-            'author': {
-                'read_only': True
-            }
-        }
+        fields = ('id', 'author', 'note_group', 'title', 'creation_date', 'content', 'rating')
+        read_only_fields = ('author',)
 
     def validate(self, attrs):
-        membership = Member.objects.get(id=attrs['author'])
-        note_group = NoteGroup.objects.get(id=attrs['note_group'])
+        """Retrieve author and validate user membership"""
 
-        if membership is None:
-            raise serializers.ValidationError(_('Membro inexistente'))
+        notebook: Notebook = None
 
-        if note_group is None:
-            raise serializers.ValidationError(_('Conjunto de anotação inexistente'))
+        if self.instance:
+            notebook = self.instance.notebook
 
-        if membership.notebook.id != note_group.parent_folder.notebook.id:
-            raise serializers.ValidationError(_('Membro inválido para tal conjunto de anotação'))
+        if 'note_group' in attrs:
+            new_note_group = attrs['note_group']
+            new_notebook = new_note_group.notebook
+
+            # Check if the notebook is changing
+            if notebook is not None and new_notebook != notebook:
+                raise exceptions.ValidationError({'note_group': [_('Não é permitido mover uma anotação entre cadernos')]})
+
+            notebook = new_notebook
+
+        try:
+            # Check if the user is a notebook member
+            membership: Member = self.context['request'].user.memberships.get(notebook=notebook, is_active=True)
+        except Member.DoesNotExist:
+            raise serializers.ValidationError(_('O usuário não é membro do caderno'))
+
+        # Check if the user can modify any notebook info
+        if membership.is_banned:
+            raise exceptions.PermissionDenied()
+
+        if self.instance:
+            # Check if the user is modifying another member's note and if it has the role for it
+            if self.instance.author != membership and membership.role == Member.Roles.MEMBER:
+                raise serializers.ValidationError(_('Um membro não pode modificar a anotação de outro usuário'))
+        else:
+            attrs['author'] = membership
+
+        return attrs
