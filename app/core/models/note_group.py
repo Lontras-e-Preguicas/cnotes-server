@@ -20,5 +20,9 @@ class NoteGroup(models.Model):
         verbose_name = _('conjunto de anotação')
         verbose_name_plural = _('conjunto de anotações')
 
+    @property
+    def notebook(self):
+        return self.parent_folder.notebook
+
     def __str__(self):
         return f'{self.parent_folder}/{self.title}'

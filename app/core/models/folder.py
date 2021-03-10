@@ -1,7 +1,7 @@
 import uuid
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, F
 from django.utils.translation import gettext_lazy as _
 
 
@@ -9,6 +9,7 @@ class Folder(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
                           help_text=_("ID único seguindo o padrão UUID4."))
     title = models.CharField(max_length=255,
+                             blank=False,
                              verbose_name=_("título"),
                              help_text=_("Título da pasta."))
     notebook = models.ForeignKey('Notebook', on_delete=models.CASCADE, verbose_name=_('caderno'),
@@ -26,11 +27,12 @@ class Folder(models.Model):
     class Meta:
         verbose_name = _('pasta')
         verbose_name_plural = _('pastas')
-        constraints = [models.UniqueConstraint(fields=['notebook'], condition=Q(parent_folder=None),
-                                               name='unique_parent_folder')]
+        constraints = [
+            # Check if there is only one root folder
+            models.UniqueConstraint(fields=['notebook'], condition=Q(parent_folder=None),
+                                    name='unique_parent_folder'),
+            models.CheckConstraint(check=~Q(id=F('parent_folder')), name='no_self_reference')
+        ]
 
     def __str__(self):
-        if self.parent_folder:
-            return f'{self.parent_folder}/{self.title}'
-
         return f'{self.notebook}/{self.title}'

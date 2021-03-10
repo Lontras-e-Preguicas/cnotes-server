@@ -15,7 +15,7 @@ def profile_picture_path(instance, filename):
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email: str, name: str, password: str, bio: str = None, **extra_fields):
+    def create_user(self, email: str, name: str, password: str, bio: str = "", **extra_fields):
         """Create an user from its fields"""
         if not email:
             raise ValueError(_('endereço de e-mail é obrigatório'))
@@ -47,8 +47,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
                           help_text=_("ID único seguindo o padrão UUID4."))
     email = models.EmailField(unique=True)  # Required
-    name = models.CharField(max_length=255, verbose_name=_("nome"))  # Required
-    bio = models.CharField(max_length=360, blank=True, null=True, verbose_name=_("bio"),
+    name = models.CharField(max_length=255, blank=False, verbose_name=_("nome"))  # Required
+    bio = models.CharField(max_length=360, blank=True, default="", verbose_name=_("bio"),
                            help_text=_("Pequena descrição pública do usuário."))
     profile_picture = ResizedImageField(
         upload_to=profile_picture_path,

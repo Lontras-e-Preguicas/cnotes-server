@@ -36,5 +36,13 @@ class Notebook(models.Model):
         verbose_name = _('caderno')
         verbose_name_plural = _('cadernos')
 
+    @property
+    def root_folder(self):
+        return self.folders.get(parent_folder=None)
+
+    @property
+    def owner_as_member(self):
+        return Member.objects.get(notebook=self, user=self.owner)
+
     def __str__(self):
         return self.title
