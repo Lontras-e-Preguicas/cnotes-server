@@ -17,7 +17,7 @@ class Note(models.Model):
                                    related_name='notes',
                                    related_query_name='note'
                                    )
-    title = models.CharField(max_length=255, verbose_name=_("título"), help_text=_('Título da anotação.'))
+    title = models.CharField(max_length=255, blank=False, verbose_name=_("título"), help_text=_('Título da anotação.'))
 
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name=_("data de criação"),
                                          help_text=_("Data de criação da anotação."))
@@ -27,6 +27,10 @@ class Note(models.Model):
     class Meta:
         verbose_name = _('anotação')
         verbose_name_plural = _('anotações')
+
+    @property
+    def notebook(self):
+        return self.note_group.notebook
 
     def __str__(self):
         return self.title

@@ -103,7 +103,7 @@ class ModelTests(TestCase):
         test_title = 'Notebook 1'
 
         notebook = Notebook.objects.create(title=test_title, owner=test_user)
-        self.assertEqual(notebook.creation_date.strftime("%D"), datetime.now().strftime("%D"))
+        self.assertEqual(notebook.creation_date.strftime("%D"), datetime.utcnow().strftime("%D"))
 
         notebook_saved = Notebook.objects.get(id=notebook.id)
         self.assertEqual(notebook_saved.title, test_title)
@@ -159,7 +159,7 @@ class ModelTests(TestCase):
         member = Member.objects.create(user=test_user, notebook=test_notebook)
         self.assertEqual(member.user, test_user)
         self.assertEqual(member.notebook, test_notebook)
-        self.assertEqual(member.member_since.strftime("%D"), datetime.now().strftime("%D"))
+        self.assertEqual(member.member_since.strftime("%D"), datetime.utcnow().strftime("%D"))
 
     # Invite Test
 
@@ -176,7 +176,7 @@ class ModelTests(TestCase):
         invite = Invite.objects.create(sender=test_member, receiver=test_user)
         self.assertEqual(invite.sender, test_member)
         self.assertEqual(invite.receiver, test_user)
-        self.assertEqual(invite.invite_date.strftime("%D"), datetime.now().strftime("%D"))
+        self.assertEqual(invite.invite_date.strftime("%D"), datetime.utcnow().strftime("%D"))
 
     # Activity Test
 
@@ -205,7 +205,7 @@ class ModelTests(TestCase):
 
         test_note = Note.objects.create(author=test_member, note_group=test_note_group, title=test_title)
         self.assertEqual(test_note.author, test_member)
-        self.assertEqual(test_note.creation_date.strftime("%D"), datetime.now().strftime("%D"))
+        self.assertEqual(test_note.creation_date.strftime("%D"), datetime.utcnow().strftime("%D"))
         self.assertEqual(test_note.title, test_title)
         self.assertEqual(test_note.content, "")
 
@@ -228,7 +228,7 @@ class ModelTests(TestCase):
         self.assertIn(test_rating, test_note.ratings.all())
         self.assertEqual(test_rating.rating, 8)
         self.assertIn(test_rating, test_member.rates.all())
-        self.assertEqual(test_rating.rated_date.strftime("%D"), datetime.now().strftime("%D"))
+        self.assertEqual(test_rating.rated_date.strftime("%D"), datetime.utcnow().strftime("%D"))
 
         with self.assertRaises(IntegrityError):
             Rating.objects.create(note=test_note, rating=8, rater=test_member)
@@ -248,7 +248,7 @@ class ModelTests(TestCase):
         self.assertIn(test_comment, test_note.comments.all())
         self.assertIn(test_comment, test_member.comments.all())
         self.assertFalse(test_comment.solved)
-        self.assertEqual(test_comment.creation_date.strftime("%D"), datetime.now().strftime("%D"))
+        self.assertEqual(test_comment.creation_date.strftime("%D"), datetime.utcnow().strftime("%D"))
 
     def test_notebook_create_notebook(self):
         """Test the custom create_notebook method"""

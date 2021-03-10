@@ -27,6 +27,7 @@ urlpatterns = [
     path('docs/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='redoc'),
 
     path('api/user/', include('user.urls')),
+    path('api/notebook/', include('notebook.urls'))
 ]
 
 # Media source for FS access
