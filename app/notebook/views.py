@@ -66,4 +66,5 @@ class NoteViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.Retri
     def destroy(self, request, pk=None):
         instance: Note = self.get_object()
         serializer = self.get_serializer(instance)
+        instance.delete()
         return Response(serializer.data)

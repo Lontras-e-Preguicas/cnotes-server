@@ -82,7 +82,7 @@ class PrivateNoteApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_note_update(self):
-        """Test note update success"""
+        """Test note update"""
         other_user = create_user_util(email='kekw@kekw.kek')
         other_user_membership = Member.objects.create(notebook=self.notebook, user=other_user)
         owner_test_note = Note.objects.create(note_group=self.note_group, author=self.current_user_membership)
@@ -129,5 +129,61 @@ class PrivateNoteApiTests(TestCase):
         res = self.client.patch(self.detail_url(other_test_note.id), {'title': 'The New Title'})
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_note_destroy(self):
+        """Test note destroy"""
+        other_user = create_user_util(email='kekw@kekw.kek')
+        other_user_membership = Member.objects.create(notebook=self.notebook, user=other_user)
+        owner_test_note = Note.objects.create(note_group=self.note_group, author=self.current_user_membership)
+        other_test_note = Note.objects.create(note_group=self.note_group, author=other_user_membership)
 
+        # Delete own note
+        res = self.client.delete(self.detail_url(owner_test_note.id))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
+        with self.assertRaises(Note.DoesNotExist):
+            owner_test_note.refresh_from_db()
+
+        self.client.force_authenticate(other_user)
+
+        other_user_membership.is_active = False
+        other_user_membership.save()
+
+        # Delete own note from a notebook that you are not in
+        res = self.client.delete(self.detail_url(other_test_note.id))
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+        other_user_membership.is_active = True
+        other_user_membership.is_banned = True
+        other_user_membership.save()
+
+        # Delete note while banned
+        res = self.client.delete(self.detail_url(other_test_note.id))
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_note_retrieve(self):
+        """Test note retrieval"""
+        other_user = create_user_util(email='kekw@kekw.kek')
+
+        Note.objects.create(note_group=self.note_group, author=self.current_user_membership)
+        Note.objects.create(note_group=self.note_group, author=self.current_user_membership)
+        Note.objects.create(note_group=self.note_group, author=self.current_user_membership)
+        Note.objects.create(note_group=self.note_group, author=self.current_user_membership)
+
+        # Get notes
+        res = self.client.get(NOTE_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 4)
+
+        # Get notes as new user
+        self.client.force_authenticate(other_user)
+
+        res = self.client.get(NOTE_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 0)
+
+        # Join existing notebook
+        Member.objects.create(notebook=self.notebook, user=other_user)
+
+        res = self.client.get(NOTE_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 4)

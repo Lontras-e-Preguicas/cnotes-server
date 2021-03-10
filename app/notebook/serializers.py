@@ -2,28 +2,7 @@ from rest_framework import serializers, exceptions
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Avg
 
-from core.models import Member, NoteGroup, Note, Notebook
-
-
-class SerializerRelatedField(serializers.PrimaryKeyRelatedField):
-    """
-    Field to represent a related field (FK) through a serializer on read
-    ref: https://stackoverflow.com/a/52246232
-    """
-
-    def __init__(self, **kwargs):
-        self.serializer = kwargs.pop('serializer', None)
-        if self.serializer is not None and not issubclass(self.serializer, serializers.Serializer):
-            raise TypeError('"serializer" is not a valid serializer class')
-        super().__init__(**kwargs)
-
-    def use_pk_only_optimization(self):
-        return False if self.serializer else True
-
-    def to_representation(self, value):
-        if self.serializer:
-            return self.serializer(value, context=self.context).data
-        return super().to_representation(value)
+from core.models import Member, Note, Notebook
 
 
 class NoteAuthorSerializer(serializers.ModelSerializer):
@@ -39,7 +18,6 @@ class NoteAuthorSerializer(serializers.ModelSerializer):
 class NoteSerializer(serializers.ModelSerializer):
     """Serializes Note model"""
     rating = serializers.SerializerMethodField()
-    author = SerializerRelatedField(queryset=Member.objects.all(), serializer=NoteAuthorSerializer)
 
     def get_rating(self, obj: Note):
         computed_rating = obj.ratings.aggregate(Avg('rating'))['rating__avg']
@@ -64,7 +42,8 @@ class NoteSerializer(serializers.ModelSerializer):
 
             # Check if the notebook is changing
             if notebook is not None and new_notebook != notebook:
-                raise exceptions.ValidationError({'note_group': [_('Não é permitido mover uma anotação entre cadernos')]})
+                raise exceptions.ValidationError(
+                    {'note_group': [_('Não é permitido mover uma anotação entre cadernos')]})
 
             notebook = new_notebook
 
@@ -86,3 +65,9 @@ class NoteSerializer(serializers.ModelSerializer):
             attrs['author'] = membership
 
         return attrs
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['author'] = NoteAuthorSerializer(instance.author).data
+
+        return representation
