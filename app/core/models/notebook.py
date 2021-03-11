@@ -1,6 +1,6 @@
 import uuid
 
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
 from .folder import Folder
@@ -8,6 +8,7 @@ from .member import Member
 
 
 class NotebookManager(models.Manager):
+    @transaction.atomic
     def create_notebook(self, owner=None, **kwargs):
         notebook = self.create(owner=owner, **kwargs)
         Member.objects.create(user=owner, notebook=notebook, role=Member.Roles.ADMIN)  # Create owner as member
