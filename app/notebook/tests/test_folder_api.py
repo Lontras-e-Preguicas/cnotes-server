@@ -7,6 +7,7 @@ from rest_framework.test import APIClient
 from core.models import Notebook, Folder, User
 
 FOLDER_URL = reverse('notebook:folder-list')
+NOTEBOOK_ROOT_FOLDER_URL = reverse('notebook:folder-root')
 
 
 class PrivateFolderAPITests(TestCase):
@@ -51,7 +52,7 @@ class PrivateFolderAPITests(TestCase):
         self.assertIn('sub_folders', res.data)
         self.assertTrue(isinstance(res.data['sub_folders'], list))
 
-        res = self.client.get(FOLDER_URL + f"?notebook={self.notebook.id}")
+        res = self.client.get(NOTEBOOK_ROOT_FOLDER_URL + f"?notebook={self.notebook.id}")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn('sub_folders', res.data)
         self.assertTrue(isinstance(res.data['sub_folders'], list))

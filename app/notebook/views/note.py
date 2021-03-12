@@ -21,10 +21,6 @@ class ModifyNotePermission(permissions.BasePermission):
 
 class NoteViewSet(viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.UpdateModelMixin, mixins.CreateModelMixin,
                   mixins.RetrieveModelMixin, mixins.ListModelMixin):
-    """
-    Viewset for Note related operations
-    """
-
     serializer_class = NoteSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, ModifyNotePermission)
