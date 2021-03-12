@@ -1,7 +1,6 @@
 from django.core.exceptions import ValidationError
 
 from rest_framework import authentication, permissions, viewsets, mixins, exceptions
-from rest_framework.response import Response
 
 from notebook.serializers.note import NoteSerializer
 from core.models import Note, Notebook, Member

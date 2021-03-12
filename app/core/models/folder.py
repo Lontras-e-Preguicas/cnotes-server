@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 MAX_DEPTH = 20
 
+
 class Folder(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
                           help_text=_("ID único seguindo o padrão UUID4."))

@@ -1,10 +1,11 @@
-from rest_framework import serializers, exceptions
+from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError as DjangoValidationError
 
 from core.models import Folder, Member
 
 from .utils import SerializedPKRelatedField
+
 
 class ChildFolderSerializer(serializers.ModelSerializer):
 
