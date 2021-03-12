@@ -5,7 +5,7 @@ from django.db.utils import IntegrityError
 from datetime import datetime
 
 
-# Test utils
+# Test utils.py
 def create_test_user(
     name='João Cleber',
     mail='joao.cleber@celebridades.net',
