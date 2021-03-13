@@ -1,15 +1,13 @@
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-
-from rest_framework import exceptions, mixins, viewsets, permissions, authentication
-from rest_framework.response import Response
-from rest_framework.decorators import action
-
-from drf_yasg.utils import swagger_auto_schema
+from django.utils.translation import gettext_lazy as _
 from drf_yasg.openapi import Parameter
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import exceptions, mixins, viewsets, permissions, authentication
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from notebook.serializers.folder import FolderSerializer
 from core.models import Folder, Member, User
+from notebook.serializers.folder import FolderSerializer
 
 
 class FolderRolePermission(permissions.BasePermission):
@@ -38,17 +36,29 @@ class FolderViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
         current_user: User = self.request.user
         return self.queryset.filter(notebook__member__user=current_user, notebook__member__is_active=True)
 
-    @swagger_auto_schema(methods=['get'],
-                         manual_parameters=[Parameter('notebook', 'query', required=True, type='string <uuid>',
-                                                      description="ID do caderno a se obter a pasta raiz.")],
-                         responses={200: FolderSerializer})
+    @swagger_auto_schema(
+        methods=['get'],
+        operation_description="Endpoint em análise, pode ser ***modificado*** ou ***removido*** futuramente.",
+        manual_parameters=[
+            Parameter(
+                'notebook',
+                'query',
+                required=True,
+                type='string <uuid>',
+                description="ID do caderno a se obter a pasta raiz.")],
+        responses={
+            200: FolderSerializer})
     @action(detail=False, methods=['get'], url_name='root')
     def root(self, request):
         notebook_id = request.query_params.get('notebook', None)
 
         if notebook_id is None:
-            raise exceptions.ValidationError({'notebook': _('O campo notebook é obrigatório')})
+            raise exceptions.ValidationError({'notebook': [_('O campo notebook é obrigatório')]})
 
-        instance = self.get_queryset().get(notebook_id=notebook_id, parent_folder=None)
+        try:
+            instance = self.get_queryset().get(notebook_id=notebook_id, parent_folder=None)
+        except Folder.DoesNotExist:
+            raise exceptions.ValidationError({'notebook': [_('O caderno não foi encontrado')]})
+
         serializer = self.get_serializer(instance)
         return Response(serializer.data)

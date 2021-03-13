@@ -10,7 +10,7 @@ class NoteGroup(models.Model):
     title = models.CharField(max_length=255,
                              verbose_name=_("título"),
                              help_text=_("Título do conjunto."))
-    parent_folder = models.ForeignKey('Folder', null=True, blank=True, on_delete=models.CASCADE,
+    parent_folder = models.ForeignKey('Folder', on_delete=models.CASCADE,
                                       verbose_name=_('pasta pai'),
                                       help_text=_('Pasta em que este conjunto se localiza'),
                                       related_name='note_groups',

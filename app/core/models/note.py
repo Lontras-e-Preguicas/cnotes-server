@@ -32,5 +32,9 @@ class Note(models.Model):
     def notebook(self):
         return self.note_group.notebook
 
+    @property
+    def avg_rating(self):
+        return self.ratings.aggregate(models.Avg('rating'))['rating__avg']
+
     def __str__(self):
         return self.title

@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'drf_yasg',  # OpenAPI Generation
     'core',
     'user',
+    'notebook',
 ]
 
 MIDDLEWARE = [
