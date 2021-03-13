@@ -3,8 +3,6 @@ from django.utils.translation import gettext_lazy as _
 
 from core.models import Member, Note, Notebook
 
-from .utils import SerializedPKRelatedField
-
 
 class NoteAuthorSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='user.name')
@@ -17,7 +15,7 @@ class NoteAuthorSerializer(serializers.ModelSerializer):
 
 
 class RelatedNoteSerializer(serializers.ModelSerializer):
-    author = SerializedPKRelatedField(serializer=NoteAuthorSerializer, read_only=True)
+    author = NoteAuthorSerializer(read_only=True)
 
     class Meta:
         model = Note
@@ -27,10 +25,12 @@ class RelatedNoteSerializer(serializers.ModelSerializer):
 
 class NoteSerializer(serializers.ModelSerializer):
     """Serializes Note model"""
+    author = NoteAuthorSerializer(read_only=True)
+
     class Meta:
         model = Note
         fields = ('id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating')
-        read_only_fields = ('author', 'avg_rating')
+        read_only_fields = ('avg_rating',)
 
     def validate(self, attrs):
         """Retrieve author and validate user membership"""
@@ -69,9 +69,3 @@ class NoteSerializer(serializers.ModelSerializer):
             attrs['author'] = membership
 
         return attrs
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['author'] = NoteAuthorSerializer(instance.author).data
-
-        return representation

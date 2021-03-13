@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
 from core.models import NoteGroup, Member
-from .utils import SerializedPKRelatedField
 from .note import RelatedNoteSerializer
 
 
@@ -14,7 +13,7 @@ class RelatedNoteGroupSerializer(serializers.ModelSerializer):
 
 
 class NoteGroupSerializer(serializers.ModelSerializer):
-    notes = SerializedPKRelatedField(serializer=RelatedNoteSerializer, read_only=True, many=True, default=[])
+    notes = RelatedNoteSerializer(read_only=True, many=True, default=[])
 
     class Meta:
         model = NoteGroup

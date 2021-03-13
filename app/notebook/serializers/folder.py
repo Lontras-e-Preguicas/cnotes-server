@@ -4,7 +4,6 @@ from rest_framework import serializers
 
 from core.models import Folder, Member
 from .note_group import RelatedNoteGroupSerializer
-from .utils import SerializedPKRelatedField
 
 
 class RelatedFolderSerializer(serializers.ModelSerializer):
@@ -15,9 +14,8 @@ class RelatedFolderSerializer(serializers.ModelSerializer):
 
 
 class FolderSerializer(serializers.ModelSerializer):
-    sub_folders = SerializedPKRelatedField(serializer=RelatedFolderSerializer, default=[], many=True, read_only=True)
-    note_groups = SerializedPKRelatedField(serializer=RelatedNoteGroupSerializer, default=[], many=True,
-                                           read_only=True)
+    sub_folders = RelatedFolderSerializer(many=True, read_only=True)
+    note_groups = RelatedNoteGroupSerializer(many=True, read_only=True)
 
     class Meta:
         model = Folder
