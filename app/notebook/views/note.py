@@ -1,7 +1,6 @@
 from django.core.exceptions import ValidationError
 
 from rest_framework import authentication, permissions, viewsets, mixins, exceptions
-from rest_framework.response import Response
 
 from notebook.serializers.note import NoteSerializer
 from core.models import Note, Notebook, Member
@@ -20,11 +19,8 @@ class ModifyNotePermission(permissions.BasePermission):
         return True
 
 
-class NoteViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin):
-    """
-    Viewset for Note related operations
-    """
-
+class NoteViewSet(viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.UpdateModelMixin, mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin, mixins.ListModelMixin):
     serializer_class = NoteSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, ModifyNotePermission)
@@ -52,19 +48,3 @@ class NoteViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.Retri
         queryset = queryset.order_by('creation_date')
 
         return queryset
-
-    def partial_update(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs, partial=True)
-
-    def update(self, request, pk=None, partial=False):
-        instance: Note = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
-    def destroy(self, request, pk=None):
-        instance: Note = self.get_object()
-        serializer = self.get_serializer(instance)
-        instance.delete()
-        return Response(serializer.data)

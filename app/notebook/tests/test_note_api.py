@@ -138,7 +138,7 @@ class PrivateNoteApiTests(TestCase):
 
         # Delete own note
         res = self.client.delete(self.detail_url(owner_test_note.id))
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
         with self.assertRaises(Note.DoesNotExist):
             owner_test_note.refresh_from_db()

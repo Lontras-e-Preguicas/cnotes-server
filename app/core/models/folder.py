@@ -2,7 +2,10 @@ import uuid
 
 from django.db import models
 from django.db.models import Q, F
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+
+MAX_DEPTH = 20
 
 
 class Folder(models.Model):
@@ -33,6 +36,18 @@ class Folder(models.Model):
                                     name='unique_parent_folder'),
             models.CheckConstraint(check=~Q(id=F('parent_folder')), name='no_self_reference')
         ]
+
+    def clean(self, parent_folder=None):
+        """Válida integridade da relação pasta/pasta pai"""
+        cur = parent_folder or self.parent_folder
+        depth = 1
+        while cur is not None:
+            depth += 1
+            if cur == self:
+                raise ValidationError(_('Dependência circular entre pastas'))
+            if depth > MAX_DEPTH:
+                raise ValidationError(_('Profundidade máxima de pastas excedida'))
+            cur = cur.parent_folder
 
     def __str__(self):
         return f'{self.notebook}/{self.title}'
