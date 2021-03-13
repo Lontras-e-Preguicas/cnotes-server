@@ -159,31 +159,3 @@ class PrivateNoteApiTests(TestCase):
         # Delete note while banned
         res = self.client.delete(self.detail_url(other_test_note.id))
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_note_retrieve(self):
-        """Test note retrieval"""
-        other_user = create_user_util(email='kekw@kekw.kek')
-
-        Note.objects.create(note_group=self.note_group, author=self.current_user_membership)
-        Note.objects.create(note_group=self.note_group, author=self.current_user_membership)
-        Note.objects.create(note_group=self.note_group, author=self.current_user_membership)
-        Note.objects.create(note_group=self.note_group, author=self.current_user_membership)
-
-        # Get notes
-        res = self.client.get(NOTE_URL)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 4)
-
-        # Get notes as new user
-        self.client.force_authenticate(other_user)
-
-        res = self.client.get(NOTE_URL)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 0)
-
-        # Join existing notebook
-        Member.objects.create(notebook=self.notebook, user=other_user)
-
-        res = self.client.get(NOTE_URL)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 4)
