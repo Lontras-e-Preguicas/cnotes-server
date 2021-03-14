@@ -1,14 +1,12 @@
-from rest_framework import serializers
-from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 from core.models import Folder, Member
+from .note_group import RelatedNoteGroupSerializer
 
-from .utils import SerializedPKRelatedField
 
-
-class ChildFolderSerializer(serializers.ModelSerializer):
-
+class RelatedFolderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Folder
         fields = ('id', 'title')
@@ -16,11 +14,12 @@ class ChildFolderSerializer(serializers.ModelSerializer):
 
 
 class FolderSerializer(serializers.ModelSerializer):
-    sub_folders = SerializedPKRelatedField(serializer=ChildFolderSerializer, default=[], many=True, read_only=True)
+    sub_folders = RelatedFolderSerializer(many=True, read_only=True)
+    note_groups = RelatedNoteGroupSerializer(many=True, read_only=True)
 
     class Meta:
         model = Folder
-        fields = ('id', 'title', 'notebook', 'parent_folder', 'sub_folders')
+        fields = ('id', 'title', 'notebook', 'parent_folder', 'sub_folders', 'note_groups')
         read_only_fields = ('id',)
         extra_kwargs = {'notebook': {'required': False}}
 

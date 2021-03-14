@@ -1,6 +1,5 @@
 from rest_framework import serializers, exceptions
 from django.utils.translation import gettext_lazy as _
-from django.db.models import Avg
 
 from core.models import Member, Note, Notebook
 
@@ -15,18 +14,23 @@ class NoteAuthorSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class NoteSerializer(serializers.ModelSerializer):
-    """Serializes Note model"""
-    rating = serializers.SerializerMethodField()
-
-    def get_rating(self, obj: Note):
-        computed_rating = obj.ratings.aggregate(Avg('rating'))['rating__avg']
-        return computed_rating
+class RelatedNoteSerializer(serializers.ModelSerializer):
+    author = NoteAuthorSerializer(read_only=True)
 
     class Meta:
         model = Note
-        fields = ('id', 'author', 'note_group', 'title', 'creation_date', 'content', 'rating')
-        read_only_fields = ('author',)
+        fields = ('id', 'author', 'title', 'creation_date', 'avg_rating')
+        read_only_fields = fields
+
+
+class NoteSerializer(serializers.ModelSerializer):
+    """Serializes Note model"""
+    author = NoteAuthorSerializer(read_only=True)
+
+    class Meta:
+        model = Note
+        fields = ('id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating')
+        read_only_fields = ('avg_rating',)
 
     def validate(self, attrs):
         """Retrieve author and validate user membership"""
@@ -65,9 +69,3 @@ class NoteSerializer(serializers.ModelSerializer):
             attrs['author'] = membership
 
         return attrs
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['author'] = NoteAuthorSerializer(instance.author).data
-
-        return representation

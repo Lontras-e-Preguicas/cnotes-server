@@ -10,8 +10,7 @@ class Rating(models.Model):
 
     note = models.ForeignKey('Note', on_delete=models.CASCADE, verbose_name=_('anotação'),
                              help_text=_('Anotação avaliada.'),
-                             related_name='ratings', related_query_name='rating',
-                             editable=False
+                             related_name='ratings', related_query_name='rating'
                              )
 
     rating = models.IntegerField(verbose_name=_('avaliação'),
@@ -20,8 +19,7 @@ class Rating(models.Model):
     rater = models.ForeignKey('Member', on_delete=models.CASCADE, verbose_name=_('avaliador'),
                               help_text=_('Autor da avaliação.'),
                               related_name='rates',
-                              related_query_name='rate',
-                              editable=False
+                              related_query_name='rate'
                               )
 
     rated_date = models.DateTimeField(auto_now=True, verbose_name=_("data da avaliação"),
