@@ -187,11 +187,11 @@ class MemberApiTests(TestCase):
     def test_member_unban_sucess(self):
         """Test member unban"""
         moderator_user = create_user_util(email='ednaldo@gmail.com')
-        moderator_user_membership = Member.objects.create(
+        Member.objects.create(
             notebook=self.notebook, user=moderator_user, role=Member.Roles.MODERATOR)
 
         other_user = create_user_util(email='eded@gmail.com')
-        other_user_membership = Member.objects.create(notebook=self.notebook, user=other_user)
+        Member.objects.create(notebook=self.notebook, user=other_user)
 
         banned_user = create_user_util(email='ednaldoP@gmail.com')
         banned_user_membership = Member.objects.create(notebook=self.notebook, user=banned_user, is_banned=True)
