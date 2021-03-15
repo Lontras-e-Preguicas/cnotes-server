@@ -118,7 +118,7 @@ class MemberApiTests(TestCase):
 
         # Kick a member not being a member anymore
         res = self.client.post(self.detail_url(moderator_user_membership.id, namespace_kick), {'is_active': False})
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_leave_notebook_success(self):
         """Teste leaving notebook"""
