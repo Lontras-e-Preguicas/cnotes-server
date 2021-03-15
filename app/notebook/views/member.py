@@ -14,8 +14,14 @@ class MemberViewSet(viewsets.GenericViewSet):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
+    def get_queryset(self):
+        current_user = self.request.user
+        return self.queryset.filter(notebook__member__user=current_user, notebook__member__is_active=True)
+
     def list(self, request):
-        queryset = Member.objects.filter(notebook=request.GET.get("notebook"))
+        notebook_id = request.GET.get("notebook")
+
+        queryset = self.get_queryset().filter(notebook_id=notebook_id)
         serializer = MemberSerializer(queryset, many=True)
 
         return Response(serializer.data)
