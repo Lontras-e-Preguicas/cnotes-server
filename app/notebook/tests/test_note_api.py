@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import Note, Notebook, NoteGroup, Member, Folder
+from core.models import Note, Notebook, NoteGroup, Rating, Member, Folder
 
 # Constants
 
@@ -48,6 +48,9 @@ class PrivateNoteApiTests(TestCase):
 
     def detail_url(self, id):
         return reverse('notebook:note-detail', args=[id])
+
+    def rating_url(self, id):
+        return reverse('notebook:note-rating', args=[id])
 
     def test_note_creation_success(self):
         """Test note creation with valid data"""
@@ -159,3 +162,36 @@ class PrivateNoteApiTests(TestCase):
         # Delete note while banned
         res = self.client.delete(self.detail_url(other_test_note.id))
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_rating(self):
+        """Test note rating"""
+        test_note = Note.objects.create(note_group=self.note_group, author=self.current_user_membership)
+
+        res = self.client.get(self.rating_url(test_note.id))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['avg_rating'], None)
+        self.assertEqual(res.data['rating'], None)
+
+        # Rate own note (should be possible, for now)
+        res = self.client.post(self.rating_url(test_note.id), {'rating': 5})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['avg_rating'], 5)
+        self.assertEqual(res.data['rating'], 5)
+
+        other_user = create_user_util(email='kekw@kekw.kek')
+        Member.objects.create(notebook=self.notebook, user=other_user)
+
+        self.client.force_authenticate(other_user)
+
+        # Invalid rating value
+        res = self.client.post(self.rating_url(test_note.id), {'rating': 6})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        res = self.client.post(self.rating_url(test_note.id), {'rating': 0})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Rate other user's
+        res = self.client.post(self.rating_url(test_note.id), {'rating': 1})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['avg_rating'], 3)
+        self.assertEqual(res.data['rating'], 1)
