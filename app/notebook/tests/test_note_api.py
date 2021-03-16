@@ -112,6 +112,8 @@ class PrivateNoteApiTests(TestCase):
         self.client.force_authenticate(other_user)
 
         # Change own note as member
+        other_test_note.last_edited_by = None
+        other_test_note.save()
         res = self.client.patch(self.detail_url(other_test_note.id), {'title': 'The New Title'})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         other_test_note.refresh_from_db()

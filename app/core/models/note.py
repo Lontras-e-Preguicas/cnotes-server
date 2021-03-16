@@ -24,6 +24,13 @@ class Note(models.Model):
 
     content = models.TextField(verbose_name=_('conteúdo'), help_text=_('Conteúdo da anotação.'), blank=True)
 
+    last_edited = models.DateTimeField(auto_now=True, verbose_name=_("momento da última edição"),
+                                       help_text=_("Indica o momento da última edição."))
+
+    last_edited_by = models.ForeignKey('Member', on_delete=models.SET_NULL, null=True, default=None,
+                                       verbose_name=_('última edição por'),
+                                       help_text=_("Indica quem realizou a última edição."))
+
     class Meta:
         verbose_name = _('anotação')
         verbose_name_plural = _('anotações')
