@@ -1,7 +1,6 @@
-from rest_framework import authentication, permissions, viewsets, mixins, status, exceptions
+from rest_framework import authentication, permissions, viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.utils.translation import gettext_lazy as _
 
 from notebook.serializers.note import NoteSerializer
 from notebook.serializers.rating import RatingSerializer
