@@ -74,7 +74,7 @@ class NoteSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(_('Um membro não pode modificar a anotação de outro usuário'))
 
             edit_timedelta = timezone.make_aware(datetime.utcnow()) - self.instance.last_edited
-            if self.instance.last_edited_by != membership and edit_timedelta < EDIT_LOCK_DURATION:
+            if self.instance.last_edited_by not in (membership, None) and edit_timedelta < EDIT_LOCK_DURATION:
                 raise serializers.ValidationError(_('Essa anotação está sendo editada por outro usuário'))
         else:
             attrs['author'] = membership
