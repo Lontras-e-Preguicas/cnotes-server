@@ -1,7 +1,8 @@
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError as DjangoValidationError
-
+from drf_yasg.openapi import Parameter
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, permissions, authentication, mixins, status, exceptions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -36,10 +37,24 @@ class InviteViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.Des
     queryset = Invite.objects.all()
 
     def get_queryset(self):
+        if self.request.user.is_anonymous:
+            return self.queryset
+
         user_notebooks = Notebook.objects.filter(member__user=self.request.user,
                                                  member__is_active=True)
         return self.queryset.filter(Q(receiver=self.request.user) | Q(sender__notebook__in=user_notebooks))
 
+    @swagger_auto_schema(
+        methods=['get'],
+        manual_parameters=[
+            Parameter(
+                'notebook',
+                'query',
+                required=True,
+                type='string <uuid>',
+                description="ID do caderno a se obter os convites pendentes.")],
+        responses={
+            200: InviteSerializer(many=True)})
     @action(detail=False, methods=['get'])
     def pending(self, request):
         notebook_id = request.query_params.get('notebook', None)

@@ -15,6 +15,9 @@ class MemberViewSet(viewsets.GenericViewSet):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
+        if self.request.user.is_anonymous:
+            return self.queryset
+
         current_user = self.request.user
         return self.queryset.filter(notebook__member__user=current_user, notebook__member__is_active=True)
 
