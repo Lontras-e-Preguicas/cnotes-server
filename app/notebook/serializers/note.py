@@ -1,7 +1,11 @@
-from rest_framework import serializers, exceptions
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+from datetime import datetime, timedelta
+from rest_framework import serializers, exceptions
 
 from core.models import Member, Note, Notebook
+
+EDIT_LOCK_DURATION = timedelta(seconds=10)
 
 
 class NoteAuthorSerializer(serializers.ModelSerializer):
@@ -26,11 +30,13 @@ class RelatedNoteSerializer(serializers.ModelSerializer):
 class NoteSerializer(serializers.ModelSerializer):
     """Serializes Note model"""
     author = NoteAuthorSerializer(read_only=True)
+    last_edited_by = NoteAuthorSerializer(read_only=True)
 
     class Meta:
         model = Note
-        fields = ('id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating')
-        read_only_fields = ('avg_rating',)
+        fields = ('id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating', 'last_edited',
+                  'last_edited_by')
+        read_only_fields = ('avg_rating', 'last_edited')
 
     def validate(self, attrs):
         """Retrieve author and validate user membership"""
@@ -54,6 +60,7 @@ class NoteSerializer(serializers.ModelSerializer):
         try:
             # Check if the user is a notebook member
             membership: Member = self.context['request'].user.memberships.get(notebook=notebook, is_active=True)
+            attrs['last_edited_by'] = membership  # Register last edit
         except Member.DoesNotExist:
             raise serializers.ValidationError(_('O usuário não é membro do caderno'))
 
@@ -65,6 +72,10 @@ class NoteSerializer(serializers.ModelSerializer):
             # Check if the user is modifying another member's note and if it has the role for it
             if self.instance.author != membership and membership.role == Member.Roles.MEMBER:
                 raise serializers.ValidationError(_('Um membro não pode modificar a anotação de outro usuário'))
+
+            edit_timedelta = timezone.make_aware(datetime.utcnow()) - self.instance.last_edited
+            if self.instance.last_edited_by != membership and edit_timedelta < EDIT_LOCK_DURATION:
+                raise serializers.ValidationError(_('Essa anotação está sendo editada por outro usuário'))
         else:
             attrs['author'] = membership
 
