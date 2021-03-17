@@ -11,14 +11,12 @@ class Comment(models.Model):
     note = models.ForeignKey('Note', on_delete=models.CASCADE, verbose_name=_('anotação'),
                              help_text=_('Anotação comentada.'),
                              related_name='comments', related_query_name='comment',
-                             editable=False
                              )
 
     commenter = models.ForeignKey('Member', on_delete=models.CASCADE, verbose_name=_('comentarista'),
                                   help_text=_('Autor do comentário.'),
                                   related_name='comments',
                                   related_query_name='comment',
-                                  editable=False
                                   )
 
     message = models.CharField(max_length=1023, verbose_name=_('mensagem'), help_text=_('Conteúdo do comentário.'))

@@ -4,6 +4,16 @@ from django.utils.translation import gettext_lazy as _
 from core.models import Member
 
 
+class AuthorSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='user.name')
+    profile_picture = serializers.CharField(source='user.profile_picture')
+
+    class Meta:
+        model = Member
+        fields = ('id', 'name', 'profile_picture')
+        read_only_fields = fields
+
+
 class MemberSerializer(serializers.ModelSerializer):
     """Serializes the Member model"""
     email = serializers.CharField(source='user.email', read_only=True)
