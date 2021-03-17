@@ -4,22 +4,14 @@ from datetime import datetime, timedelta
 from rest_framework import serializers, exceptions
 
 from core.models import Member, Note, Notebook
+from notebook.serializers.member import AuthorSerializer
+from notebook.serializers.comment import CommentSerializer
 
 EDIT_LOCK_DURATION = timedelta(seconds=10)
 
 
-class NoteAuthorSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source='user.name')
-    profile_picture = serializers.CharField(source='user.profile_picture')
-
-    class Meta:
-        model = Member
-        fields = ('id', 'name', 'profile_picture')
-        read_only_fields = fields
-
-
 class RelatedNoteSerializer(serializers.ModelSerializer):
-    author = NoteAuthorSerializer(read_only=True)
+    author = AuthorSerializer(read_only=True)
 
     class Meta:
         model = Note
@@ -29,13 +21,15 @@ class RelatedNoteSerializer(serializers.ModelSerializer):
 
 class NoteSerializer(serializers.ModelSerializer):
     """Serializes Note model"""
-    author = NoteAuthorSerializer(read_only=True)
-    last_edited_by = NoteAuthorSerializer(read_only=True)
+    author = AuthorSerializer(read_only=True)
+    last_edited_by = AuthorSerializer(read_only=True)
+    comments = CommentSerializer(read_only=True, many=True)
 
     class Meta:
         model = Note
-        fields = ('id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating', 'last_edited',
-                  'last_edited_by')
+        fields = (
+            'id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating', 'comments', 'last_edited',
+            'last_edited_by')
         read_only_fields = ('avg_rating', 'last_edited')
 
     def validate(self, attrs):

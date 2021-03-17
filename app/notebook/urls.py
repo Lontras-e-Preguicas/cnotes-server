@@ -5,6 +5,7 @@ from notebook.views.note import NoteViewSet
 from notebook.views.folder import FolderViewSet
 from notebook.views.note_group import NoteGroupViewSet
 from notebook.views.member import MemberViewSet
+from notebook.views.comment import CommentViewSet
 from notebook.views.invite import InviteViewSet
 
 app_name = 'notebook'
@@ -15,6 +16,7 @@ main_router.register('note', NoteViewSet, 'note')
 main_router.register('folder', FolderViewSet, 'folder')
 main_router.register('note_group', NoteGroupViewSet, 'note-group')
 main_router.register('member', MemberViewSet, 'member')
+main_router.register('comment', CommentViewSet, 'comment')
 main_router.register('invite', InviteViewSet, 'invite')
 
 
