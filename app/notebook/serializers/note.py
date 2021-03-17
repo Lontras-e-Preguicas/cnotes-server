@@ -27,8 +27,9 @@ class NoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Note
-        fields = ('id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating', 'comments', 'last_edited',
-                  'last_edited_by')
+        fields = (
+            'id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating', 'comments', 'last_edited',
+            'last_edited_by')
         read_only_fields = ('avg_rating', 'last_edited')
 
     def validate(self, attrs):

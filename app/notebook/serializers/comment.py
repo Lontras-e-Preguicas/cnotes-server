@@ -15,7 +15,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         current_user: User = self.context['request'].user
-        note = self.instance.note if self.instance else attrs['note']  # If there's neither, this code point shouldn't be reached
+        note = self.instance.note if self.instance else attrs[
+            'note']  # If there's neither, this code point shouldn't be reached
 
         try:
             current_user_membership = current_user.memberships.get(notebook=note.notebook, is_active=True)

@@ -48,4 +48,3 @@ class CommentViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.
     @action(detail=True, methods=['post'])
     def unsolve(self, request, pk=None):
         return self.solve(request, pk=pk, solved=False)
-
