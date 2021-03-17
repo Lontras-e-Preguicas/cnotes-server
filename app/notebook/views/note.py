@@ -37,6 +37,8 @@ class NoteViewSet(viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.Upda
 
     def get_queryset(self):
         # Limit user access to only their notebooks
+        if self.request.user.is_anonymous:
+            return self.queryset
         user_notebooks = Notebook.objects.filter(member__user=self.request.user,
                                                  member__is_active=True)
         queryset = self.queryset.filter(note_group__parent_folder__notebook__in=user_notebooks)

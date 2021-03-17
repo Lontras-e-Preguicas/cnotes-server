@@ -33,6 +33,8 @@ class FolderViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
     queryset = Folder.objects.all()
 
     def get_queryset(self):
+        if self.request.user.is_anonymous:
+            return self.queryset
         current_user: User = self.request.user
         return self.queryset.filter(notebook__member__user=current_user, notebook__member__is_active=True)
 
@@ -47,7 +49,7 @@ class FolderViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
                 type='string <uuid>',
                 description="ID do caderno a se obter a pasta raiz.")],
         responses={
-            200: FolderSerializer})
+            200: FolderSerializer()})
     @action(detail=False, methods=['get'], url_name='root')
     def root(self, request):
         notebook_id = request.query_params.get('notebook', None)
