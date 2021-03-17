@@ -1,7 +1,8 @@
 import uuid
 
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
+from .member import Member
 
 
 class Invite(models.Model):
@@ -29,6 +30,16 @@ class Invite(models.Model):
     class Meta:
         verbose_name = _('convite')
         verbose_name_plural = _('convites')
+
+    def accept(self):
+        with transaction.atomic():
+            new_membership = Member.objects.create(user=self.receiver, notebook=self.sender.notebook)
+            self.delete()
+        return new_membership
+
+    def deny(self):
+        self.delete()
+        return
 
     def __str__(self):
         return f'{self._meta.verbose_name} {self.sender} => {self.receiver}'
