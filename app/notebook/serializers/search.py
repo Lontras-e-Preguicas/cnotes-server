@@ -19,4 +19,4 @@ class SearchResult:
 class SearchResultSerializer(serializers.Serializer):
     folders = RelatedFolderSerializer(many=True, read_only=True)
     note_groups = RelatedNoteGroupSerializer(many=True, read_only=True)
-    note = RelatedNoteSerializer(many=True, read_only=True)
+    notes = RelatedNoteSerializer(many=True, read_only=True)
