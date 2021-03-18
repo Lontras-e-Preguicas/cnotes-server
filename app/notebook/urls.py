@@ -8,6 +8,7 @@ from notebook.views.member import MemberViewSet
 from notebook.views.comment import CommentViewSet
 from notebook.views.invite import InviteViewSet
 from notebook.views.activity import ActivityViewSet
+from notebook.views.notebook import NotebookViewSet
 
 app_name = 'notebook'
 
@@ -20,6 +21,7 @@ main_router.register('member', MemberViewSet, 'member')
 main_router.register('comment', CommentViewSet, 'comment')
 main_router.register('invite', InviteViewSet, 'invite')
 main_router.register('activity', ActivityViewSet, 'activity')
+main_router.register('notebook', NotebookViewSet, 'notebook')
 
 
 urlpatterns = [
