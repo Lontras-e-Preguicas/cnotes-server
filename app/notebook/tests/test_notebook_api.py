@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from core.models import Notebook, NoteGroup, Member, User
+from core.models import Notebook, Member, User
 
 NOTEBOOK_URL = reverse('notebook:notebook-list')
 
@@ -31,7 +31,7 @@ class PrivateNotebookApiTests(TestCase):
         notebook = Notebook.objects.get(id=res.data['id'])
         membership = notebook.members.get(user=self.current_user)
         self.assertEqual(membership.role, Member.Roles.ADMIN)
-        root_folder = notebook.root_folder
+        notebook.root_folder
 
         res = self.client.get(NOTEBOOK_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

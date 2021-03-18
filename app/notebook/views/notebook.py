@@ -1,8 +1,6 @@
-from rest_framework import authentication, permissions, viewsets, mixins, exceptions
+from rest_framework import authentication, permissions, viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
-from django.utils.translation import gettext_lazy as _
 
 from core.models import Notebook, Member
 from notebook.serializers.notebook import NotebookSerializer
@@ -28,8 +26,8 @@ class NotebookRolePermission(permissions.BasePermission):
         return True
 
 
-class NotebookViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin,
-                      mixins.DestroyModelMixin, mixins.UpdateModelMixin):
+class NotebookViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin,
+                      mixins.RetrieveModelMixin, mixins.DestroyModelMixin, mixins.UpdateModelMixin):
     serializer_class = NotebookSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, NotebookRolePermission)
