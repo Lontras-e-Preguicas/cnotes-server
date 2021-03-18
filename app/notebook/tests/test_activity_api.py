@@ -33,15 +33,15 @@ class PrivateActivityApiTests(TestCase):
         res = self.client.get(self.detail_url(test_activities[0].id))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-        res = self.client.post(self.detail_url(test_activities[0].id, 'view'))
+        res = self.client.post(self.detail_url(test_activities[0].id, 'see'))
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         test_activities[0].refresh_from_db()
-        self.assertTrue(test_activities[0].is_viewed)
+        self.assertTrue(test_activities[0].seen)
 
-        res = self.client.post(self.detail_url(test_activities[0].id, 'unview'))
+        res = self.client.post(self.detail_url(test_activities[0].id, 'unsee'))
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         test_activities[0].refresh_from_db()
-        self.assertFalse(test_activities[0].is_viewed)
+        self.assertFalse(test_activities[0].seen)
 
         self.client.force_authenticate(self.other_user)
         res = self.client.get(self.detail_url(test_activities[0].id))

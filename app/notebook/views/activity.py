@@ -18,15 +18,15 @@ class ActivityViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Ret
         return self.queryset.filter(user=current_user)
 
     @action(detail=True, methods=['post'])
-    def view(self, request, pk=None):
+    def see(self, request, pk=None):
         instance: Activity = self.get_object()
-        instance.is_viewed = True
+        instance.seen = True
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['post'])
-    def unview(self, request, pk=None):
+    def unsee(self, request, pk=None):
         instance: Activity = self.get_object()
-        instance.is_viewed = False
+        instance.seen = False
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)

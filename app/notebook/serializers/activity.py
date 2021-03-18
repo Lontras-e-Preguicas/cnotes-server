@@ -6,5 +6,5 @@ from core.models import Activity
 class ActivitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
-        fields = ('id', 'title', 'description', 'is_viewed')
+        fields = ('id', 'title', 'description', 'seen')
         read_only_fields = ('title', 'description')

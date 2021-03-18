@@ -19,7 +19,7 @@ class Activity(models.Model):
     description = models.CharField(max_length=255, verbose_name=_('descrição'),
                                    help_text=_('Descrição da atividade')
                                    )
-    is_viewed = models.BooleanField(default=False, verbose_name=_('visto'),
+    seen = models.BooleanField(default=False, verbose_name=_('visto'),
                                     help_text=_('Indica se a atividade foi vista')
                                     )
 
