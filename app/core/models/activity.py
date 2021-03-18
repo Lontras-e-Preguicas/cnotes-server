@@ -20,8 +20,8 @@ class Activity(models.Model):
                                    help_text=_('Descrição da atividade')
                                    )
     seen = models.BooleanField(default=False, verbose_name=_('visto'),
-                                    help_text=_('Indica se a atividade foi vista')
-                                    )
+                               help_text=_('Indica se a atividade foi vista')
+                               )
 
     class Meta:
         verbose_name = _('atividade')
