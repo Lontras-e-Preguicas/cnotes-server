@@ -56,6 +56,9 @@ class MemberSerializer(serializers.ModelSerializer):
         if 'is_banned' in value:
             ban = value['is_banned']
 
+            if ban:
+                value['role'] = Member.Roles.MEMBER
+
             # Check if the actor has the permission to ban/unban a member
             if actor_membership.role != Member.Roles.MEMBER and ban:
                 # Check if the actor is trying to ban itself
