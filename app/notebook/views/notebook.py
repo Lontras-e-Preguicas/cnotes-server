@@ -1,11 +1,13 @@
+from drf_yasg.openapi import Parameter
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import authentication, permissions, viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from core.models import Notebook, Member
-from notebook.serializers.notebook import NotebookSerializer
-from notebook.serializers.member import MemberSerializer
 from notebook.serializers.folder import FolderSerializer
+from notebook.serializers.member import MemberSerializer
+from notebook.serializers.notebook import NotebookSerializer
 from notebook.serializers.search import SearchResult, SearchResultSerializer
 
 
@@ -39,18 +41,29 @@ class NotebookViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.L
         return Notebook.objects.filter(member__user=self.request.user,
                                        member__is_active=True)
 
+    @swagger_auto_schema(
+        responses={200: MemberSerializer(many=True)}
+    )
     @action(detail=True, methods=['get'])
     def members(self, request, pk=None):
         instance: Notebook = self.get_object()
         serializer = MemberSerializer(instance.members.all(), many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        responses={200: FolderSerializer()}
+    )
     @action(detail=True, methods=['get'])
     def root(self, request, pk=None):
         instance: Notebook = self.get_object()
         serializer = FolderSerializer(instance.root_folder)
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        manual_parameters=[Parameter('q', 'query', required=True, type='string',
+                                     description='_query_ de pesquisa (pode ser substituído pelo parâmetro `query`)')],
+        responses={200: SearchResultSerializer()}
+    )
     @action(detail=True, methods=['get'])
     def search(self, request, pk=None):
         instance: Notebook = self.get_object()
