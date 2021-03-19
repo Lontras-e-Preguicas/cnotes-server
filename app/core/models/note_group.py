@@ -24,5 +24,9 @@ class NoteGroup(models.Model):
     def notebook(self):
         return self.parent_folder.notebook
 
+    @property
+    def is_empty(self):
+        return self.notes.count() == 0
+
     def __str__(self):
         return f'{self.parent_folder}/{self.title}'

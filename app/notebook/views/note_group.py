@@ -11,7 +11,10 @@ class NoteGroupRolePermission(permissions.BasePermission):
 
         membership = obj.notebook.members.get(user=request.user)
 
-        if membership.role == Member.Roles.MEMBER:
+        if membership.is_banned:
+            return False
+
+        if membership.role == Member.Roles.MEMBER and not obj.is_empty:
             return False
 
         return True
