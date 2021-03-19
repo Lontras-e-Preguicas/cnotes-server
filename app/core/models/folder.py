@@ -49,5 +49,9 @@ class Folder(models.Model):
                 raise ValidationError(_('Profundidade máxima de pastas excedida'))
             cur = cur.parent_folder
 
+    @property
+    def is_empty(self):
+        return self.sub_folders.count() == 0 and self.note_groups.count() == 0
+
     def __str__(self):
         return f'{self.notebook}/{self.title}'
