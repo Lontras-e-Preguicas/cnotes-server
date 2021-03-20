@@ -10,3 +10,4 @@ from .activity import Activity
 from .note import Note
 from .rating import Rating
 from .comment import Comment
+from .attachment import Attachment

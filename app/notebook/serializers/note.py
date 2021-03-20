@@ -1,11 +1,13 @@
-from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
 from datetime import datetime, timedelta
+
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers, exceptions
 
 from core.models import Member, Note, Notebook
-from notebook.serializers.member import AuthorSerializer
+from notebook.serializers.attachment import AttachmentSerializer
 from notebook.serializers.comment import CommentSerializer
+from notebook.serializers.member import AuthorSerializer
 
 EDIT_LOCK_DURATION = timedelta(seconds=10)
 
@@ -24,12 +26,13 @@ class NoteSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
     last_edited_by = AuthorSerializer(read_only=True)
     comments = CommentSerializer(read_only=True, many=True)
+    attachments = AttachmentSerializer(read_only=True, many=True)
 
     class Meta:
         model = Note
         fields = (
-            'id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating', 'comments', 'last_edited',
-            'last_edited_by')
+            'id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating', 'comments', 'attachments',
+            'last_edited', 'last_edited_by')
         read_only_fields = ('avg_rating', 'last_edited')
 
     def validate(self, attrs):

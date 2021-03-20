@@ -9,6 +9,7 @@ from notebook.views.comment import CommentViewSet
 from notebook.views.invite import InviteViewSet
 from notebook.views.activity import ActivityViewSet
 from notebook.views.notebook import NotebookViewSet
+from notebook.views.attachment import AttachmentViewSet, OpenAttachmentViewSet
 
 app_name = 'notebook'
 
@@ -22,6 +23,8 @@ main_router.register('comment', CommentViewSet, 'comment')
 main_router.register('invite', InviteViewSet, 'invite')
 main_router.register('activity', ActivityViewSet, 'activity')
 main_router.register('notebook', NotebookViewSet, 'notebook')
+main_router.register('attachment', AttachmentViewSet, 'attachment')
+main_router.register('open/attachment', OpenAttachmentViewSet, 'open-attachment')
 
 
 urlpatterns = [
