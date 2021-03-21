@@ -33,9 +33,16 @@ class Invite(models.Model):
 
     def accept(self):
         with transaction.atomic():
-            new_membership = Member.objects.create(user=self.receiver, notebook=self.sender.notebook)
+            try:
+                membership = Member.objects.get(user=self.receiver, notebook=self.sender.notebook)
+                membership.role = Member.Roles.MEMBER
+                membership.is_active = True
+                membership.is_banned = False
+                membership.save()
+            except Member.DoesNotExist:
+                membership = Member.objects.create(user=self.receiver, notebook=self.sender.notebook)
             self.delete()
-        return new_membership
+        return membership
 
     def deny(self):
         self.delete()
