@@ -6,7 +6,6 @@ from rest_framework import serializers, exceptions
 
 from core.models import Member, Note, Notebook
 from notebook.serializers.attachment import AttachmentSerializer
-from notebook.serializers.comment import CommentSerializer
 from notebook.serializers.member import AuthorSerializer
 
 EDIT_LOCK_DURATION = timedelta(seconds=10)
