@@ -25,13 +25,12 @@ class NoteSerializer(serializers.ModelSerializer):
     """Serializes Note model"""
     author = AuthorSerializer(read_only=True)
     last_edited_by = AuthorSerializer(read_only=True)
-    comments = CommentSerializer(read_only=True, many=True)
     attachments = AttachmentSerializer(read_only=True, many=True)
 
     class Meta:
         model = Note
         fields = (
-            'id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating', 'comments', 'attachments',
+            'id', 'author', 'note_group', 'title', 'creation_date', 'content', 'avg_rating', 'attachments',
             'last_edited', 'last_edited_by')
         read_only_fields = ('avg_rating', 'last_edited')
 
