@@ -1,0 +1,55 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.9]
+    env:
+      SECRET_KEY: 'er29n13y7^-or7%7k!5_!k&gf4v@9)kd$j&o_b2)2p=@c8^#87'
+      DATABASE_URL: 'psql://postgres:postgres@127.0.0.1:5432/cnotes'
+      EMAIL_URL: 'memorymail:'
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: cnotes
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pipenv
+        pipenv install --system --deploy --dev
+    - name: Lint
+      run: |
+        python -m flake8
+    - name: Migrate
+      run: |
+        cd app
+        python manage.py migrate
+    - name: Run Tests
+      run: |
+        cd app
+        python manage.py test

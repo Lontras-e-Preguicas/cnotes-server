@@ -6,6 +6,15 @@ name = "pypi"
 [packages]
 django = "*"
 djangorestframework = "*"
+pillow = "*"
+django-environ = "*"
+psycopg2-binary = "*"
+django-cleanup = "*"
+django-resized = "*"
+django-extensions = "*"
+pyopenssl = "*"
+werkzeug = "*"
+drf-yasg = "*"
 
 [dev-packages]
 autopep8 = "*"
