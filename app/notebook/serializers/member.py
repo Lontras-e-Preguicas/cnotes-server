@@ -44,6 +44,15 @@ class MemberSerializer(serializers.ModelSerializer):
         if not target_member.is_active:
             raise serializers.ValidationError(_('Esse usuário não é mais membro do caderno.'))
 
+        # Check if someone is trying to kick a member or leave
+        if 'is_active' in value:
+            active = value['is_active']
+
+            # Check if someone is trying to kick a member
+            if target_member.user != actor_membership.user and not active:
+                if actor_membership.role == Member.Roles.MEMBER:
+                    raise serializers.ValidationError(_('Um membro não pode expulsar outro.'))
+
         # Check if the role is changing
         if 'role' in value:
             new_role = value['role']
@@ -68,15 +77,6 @@ class MemberSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(_('Um membro não pode banir outro.'))
             elif actor_membership.role == Member.Roles.MEMBER and not ban:
                 raise serializers.ValidationError(_('Um membro não pode desbanir outro.'))
-
-        # Check if someone is trying to kick a member or leave
-        if 'is_active' in value:
-            active = value['is_active']
-
-            # Check if someone is trying to kick a member
-            if target_member.user != actor_membership.user and not active:
-                if actor_membership.role == Member.Roles.MEMBER:
-                    raise serializers.ValidationError(_('Um membro não pode expulsar outro.'))
 
         # Check if the target is the owner of the notebook
         if target_member.user == target_member.notebook.owner:
