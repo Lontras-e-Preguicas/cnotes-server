@@ -2,8 +2,11 @@ from rest_framework import authentication, permissions, viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from drf_yasg.utils import swagger_auto_schema
+
 from notebook.serializers.note import NoteSerializer
 from notebook.serializers.rating import RatingSerializer
+from notebook.serializers.comment import CommentSerializer
 from core.models import Note, Notebook, Member, Rating
 
 
@@ -76,3 +79,12 @@ class NoteViewSet(viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.Upda
             return Response(rating_serializer.data)
 
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    @swagger_auto_schema(
+        responses={200: CommentSerializer(many=True)}
+    )
+    @action(detail=True, methods=['get'])
+    def comments(self, request, pk=None):
+        instance: Note = self.get_object()
+        serializer = CommentSerializer(instance.comments.all(), many=True)
+        return Response(serializer.data)
