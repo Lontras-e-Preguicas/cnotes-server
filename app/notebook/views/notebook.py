@@ -47,7 +47,7 @@ class NotebookViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.L
     @action(detail=True, methods=['get'])
     def members(self, request, pk=None):
         instance: Notebook = self.get_object()
-        serializer = MemberSerializer(instance.members.all(), many=True)
+        serializer = MemberSerializer(instance.members.filter(is_active=True), many=True)
         return Response(serializer.data)
 
     @swagger_auto_schema(

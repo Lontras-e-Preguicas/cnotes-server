@@ -46,7 +46,8 @@ class MemberViewSet(viewsets.GenericViewSet):
     def kick_member(self, request, pk=None):
         """Kick a member from a notebook"""
         data = {
-            "is_active": False
+            "is_active": False,
+            "role": "member"
         }
 
         instance: Member = self.get_object()
