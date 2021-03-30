@@ -44,6 +44,11 @@ class InviteViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.Des
                                                  member__is_active=True)
         return self.queryset.filter(Q(receiver=self.request.user) | Q(sender__notebook__in=user_notebooks))
 
+    def list(self, request):
+        invites = request.user.invites.all()
+        serializer = self.get_serializer(invites, many=True)
+        return Response(serializer.data)
+
     @swagger_auto_schema(
         methods=['get'],
         manual_parameters=[
