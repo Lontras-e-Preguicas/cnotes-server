@@ -23,6 +23,9 @@ class Activity(models.Model):
                                help_text=_('Indica se a atividade foi vista')
                                )
 
+    creation_date = models.DateTimeField(auto_now_add=True, verbose_name=_("data de criação"),
+                                         help_text=_("Indica quando a atividade ocorreu"))
+
     class Meta:
         verbose_name = _('atividade')
         verbose_name_plural = _('atividades')
