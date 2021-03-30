@@ -12,13 +12,14 @@ class ReceiverSerializer(serializers.ModelSerializer):
 
 
 class SenderSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source='user.name')
-    profile_picture = serializers.CharField(source='user.profile_picture')
-    email = serializers.CharField(source='user.email')
+    name = serializers.CharField(source='user.name', read_only=True)
+    profile_picture = serializers.CharField(source='user.profile_picture', read_only=True)
+    email = serializers.CharField(source='user.email', read_only=True)
+    notebook_title = serializers.CharField(source='notebook.title', read_only=True)
 
     class Meta:
         model = Member
-        fields = ('id', 'name', 'email', 'profile_picture')
+        fields = ('id', 'name', 'email', 'profile_picture', 'notebook_title')
         read_only_fields = fields
 
 
