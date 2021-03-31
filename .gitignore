@@ -305,3 +305,4 @@ $RECYCLE.BIN/
 
 # Ignore local media files for testing
 /app/media
+/app/staticfiles
