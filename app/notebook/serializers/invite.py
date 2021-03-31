@@ -50,7 +50,7 @@ class InviteSerializer(serializers.ModelSerializer):
 
         receiver: User = attrs['receiver']
 
-        if notebook.members.filter(user=receiver).count() != 0:
+        if notebook.members.filter(user=receiver, is_active=True).count() != 0:
             raise serializers.ValidationError(_('Esse usuário já é membro do caderno'))
 
         if receiver.invites.filter(sender__notebook=notebook).count() != 0:
