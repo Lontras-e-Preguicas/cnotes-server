@@ -1,6 +1,5 @@
 from pathlib import Path
 from environ import Env
-from warnings import warn
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
