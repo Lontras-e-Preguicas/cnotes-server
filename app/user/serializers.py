@@ -73,9 +73,9 @@ class CreatePasswordResetTokenSerializer(serializers.Serializer):
         """Validate if the user exists"""
         email = attrs['email']
 
-        user = User.objects.get(email=email)
-
-        if not user:
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
             raise serializers.ValidationError(_('Usuário não encontrado'))
 
         attrs['user'] = user
@@ -97,9 +97,9 @@ class ConfirmPasswordResetTokenSerializer(serializers.Serializer):
         token = attrs['token']
         uid = attrs['uid']
 
-        user = User.objects.get(id=uid)
-
-        if not user:
+        try:
+            user = User.objects.get(id=uid)
+        except User.DoesNotExist:
             raise serializers.ValidationError(_('UID inválido'))
 
         if not tokens.PasswordResetTokenGenerator().check_token(user, token):
