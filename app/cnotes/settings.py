@@ -6,12 +6,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = Env(
     DEBUG=(bool, False),
+    BOTO=(bool, False),
     ALLOWED_HOSTS=(list, []),
 )
 
 env.read_env(env_file=str(Path.joinpath(BASE_DIR.parent, '.env')))  # Loads .env file
 
 DEBUG = env('DEBUG')
+BOTO = env('BOTO')
 
 SECRET_KEY = env('SECRET_KEY')
 
@@ -35,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_cleanup',  # Unused files cleanup
     'drf_yasg',  # OpenAPI Generation
+    'storages',
     'core',
     'user',
     'notebook',
@@ -125,14 +128,24 @@ USE_TZ = True
 
 # Static and Media
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+if DEBUG and not BOTO:
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/media/'
 
-MEDIA_ROOT = Path.joinpath(BASE_DIR, 'media')
+    MEDIA_ROOT = Path.joinpath(BASE_DIR, 'media')
+else:
+    AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')
+    AWS_S3_ENDPOINT_URL = env('AWS_S3_ENDPOINT_URL')
+    AWS_LOCATION = env('AWS_LOCATION', default="")
 
-# Warning while not adding any storage service support
-if not DEBUG:
-    warn('Using file system media storage outside of DEBUG')
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+    MEDIA_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
+    STATIC_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
+
 
 # E-Mail settings
 
