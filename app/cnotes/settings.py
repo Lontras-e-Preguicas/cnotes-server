@@ -133,6 +133,7 @@ if DEBUG and not BOTO:
     MEDIA_URL = '/media/'
 
     MEDIA_ROOT = Path.joinpath(BASE_DIR, 'media')
+    STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
 else:
     # S3 settings
     AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
