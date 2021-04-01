@@ -127,6 +127,8 @@ USE_TZ = True
 
 # Static and Media
 
+UPLOADED_FILES_USE_URL = True
+
 if DEBUG and not BOTO:
     STATIC_URL = '/static/'
     MEDIA_URL = '/media/'

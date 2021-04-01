@@ -6,7 +6,7 @@ from core.models import Member
 
 class AuthorSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='user.name')
-    profile_picture = serializers.CharField(source='user.profile_picture')
+    profile_picture = serializers.ImageField(source='user.profile_picture')
 
     class Meta:
         model = Member
@@ -19,7 +19,7 @@ class MemberSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email', read_only=True)
     name = serializers.CharField(source='user.name', read_only=True)
     bio = serializers.CharField(source='user.bio', read_only=True)
-    profile_picture = serializers.CharField(source='user.profile_picture', read_only=True)
+    profile_picture = serializers.ImageField(source='user.profile_picture', read_only=True)
 
     class Meta:
         model = Member
